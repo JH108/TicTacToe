@@ -11,13 +11,10 @@ import kotlinx.html.*
 
 fun HTML.index() {
     head {
-        title("Hello from Ktor!")
+        title("TicTacToe")
     }
     body {
-        div {
-            +"Hello from Ktor"
-        }
-        div {
+        main {
             id = "root"
         }
         script(src = "/static/TicTacToe.js") {}
