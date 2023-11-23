@@ -1,6 +1,8 @@
 name: Test All Modules
 
 on:
+#  allow the workflow to be triggered manually
+  workflow_dispatch:
   push:
     branches: [ "main" ]
   pull_request:
