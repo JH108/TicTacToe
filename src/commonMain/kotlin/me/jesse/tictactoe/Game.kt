@@ -10,9 +10,23 @@ package me.jesse.tictactoe
  */
 data class Game(
     val board: Board = Board(),
-    val currentPlayer: Player = Player.X,
-    val winner: Player? = null,
+    val currentPlayer: Player = Player.X
 ) {
+    private val winningLines = listOf(
+        // Horizontal
+        listOf(0, 1, 2),
+        listOf(3, 4, 5),
+        listOf(6, 7, 8),
+        // Vertical
+        listOf(0, 3, 6),
+        listOf(1, 4, 7),
+        listOf(2, 5, 8),
+        // Diagonal
+        listOf(0, 4, 8),
+        listOf(2, 4, 6),
+    )
+    val winner: Player?
+        get() = calculateWinner()
     private val isCompleted: Boolean
         get() = (winner != null) || board.squares.all { it.value != SquareValue.EMPTY }
 
@@ -25,9 +39,7 @@ data class Game(
 
     fun play(squareIndex: Int): Game {
         if (!checkValidMove(squareIndex)) {
-            return this.copy(
-                winner = calculateWinner()
-            )
+            return this
         }
 
         val newBoard = board.copy(
@@ -43,29 +55,15 @@ data class Game(
         return copy(
             board = newBoard,
             currentPlayer = currentPlayer.next(),
-            winner = calculateWinner(),
         )
     }
 
     private fun calculateWinner(): Player? {
-        val winningLines = listOf(
-            // Horizontal
-            listOf(0, 1, 2),
-            listOf(3, 4, 5),
-            listOf(6, 7, 8),
-            // Vertical
-            listOf(0, 3, 6),
-            listOf(1, 4, 7),
-            listOf(2, 5, 8),
-            // Diagonal
-            listOf(0, 4, 8),
-            listOf(2, 4, 6),
-        )
-
         return winningLines.fold<List<Int>, Player?>(null) { player, line ->
             val squareValues = line.map { board.squares[it].value }
 
             when {
+                // Short Circuit if we already have a winner
                 player != null -> player
                 squareValues.all { it == SquareValue.X } -> Player.X
                 squareValues.all { it == SquareValue.O } -> Player.O
