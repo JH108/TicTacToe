@@ -1,0 +1,29 @@
+CREATE TABLE Games (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    current_player TEXT NOT NULL,
+    board TEXT NOT NULL
+);
+
+CREATE TABLE Squares (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  game_id INTEGER NOT NULL,
+  position INTEGER NOT NULL,
+  value TEXT NOT NULL,
+
+  FOREIGN KEY(game_id) REFERENCES Games(id)
+);
+
+insertSquare:
+INSERT INTO Squares (game_id, position, value)
+VALUES (?, ?, ?);
+
+selectSquaresByGame:
+SELECT * FROM Squares
+WHERE game_id = ?;
+
+CREATE TABLE Users (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL
+);

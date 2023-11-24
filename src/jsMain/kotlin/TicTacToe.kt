@@ -1,13 +1,11 @@
 import csstype.*
 import emotion.react.css
-import me.jesse.tictactoe.Game
+import me.jesse.models.Game
+import me.jesse.tictactoe.Board
 import me.jesse.tictactoe.Square
 import me.jesse.tictactoe.SquareValue
-import react.FC
-import react.Props
-import react.create
+import react.*
 import react.dom.html.ReactHTML.div
-import react.useState
 
 external interface TicTacToeProps : Props {
     var game: Game
@@ -15,6 +13,16 @@ external interface TicTacToeProps : Props {
 
 val TicTacToe = FC<TicTacToeProps> { props ->
     var game by useState(props.game)
+    var board by useState(Board())
+
+    // if the game changes then update the board with the new moves
+    useEffect(game) {
+        board = board.copy(squares = board.squares.mapIndexed { index, square ->
+            if (game.moves.containsKey(index)) {
+                square.copy(value = game.moves[index]?.moveSymbol ?: SquareValue.EMPTY)
+            } else square
+        })
+    }
 
     div {
         css {
@@ -25,14 +33,14 @@ val TicTacToe = FC<TicTacToeProps> { props ->
             height = 100.vh
         }
 
-        val board = BoardUI.create {
-            squares = game.board.squares
+        val boardUi = BoardUI.create {
+            squares = board.squares
             onSquareClick = { index ->
                 game = game.play(index)
             }
         }
 
-        child(board)
+        child(boardUi)
     }
 }
 

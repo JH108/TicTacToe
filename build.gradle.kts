@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform") version "1.9.0"
     kotlin("plugin.serialization") version "1.9.20"
+    id("app.cash.sqldelight") version "2.0.0"
     application
 }
 
@@ -35,6 +36,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+                implementation("app.cash.sqldelight:primitive-adapters:2.0.0")
+//                implementation("com.squareup.sqldelight:runtime:2.0.0")
                 implementation("com.benasher44:uuid:0.8.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
@@ -47,7 +51,9 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-serialization:1.6.2")
+                implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
+                implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
                 implementation("io.ktor:ktor-server-netty:2.3.2")
                 implementation("io.ktor:ktor-server-html-builder-jvm:2.3.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")
@@ -68,6 +74,14 @@ kotlin {
 
 application {
     mainClass.set("me.jesse.application.ServerKt")
+}
+
+sqldelight {
+    databases {
+        create("TicTacToeDatabase") {
+            packageName.set("me.jesse.database")
+        }
+    }
 }
 
 tasks.named<Copy>("jvmProcessResources") {

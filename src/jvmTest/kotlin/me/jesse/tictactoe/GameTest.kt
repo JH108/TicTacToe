@@ -1,51 +1,67 @@
 package me.jesse.tictactoe
 
+import com.benasher44.uuid.uuid4
+import me.jesse.models.Game
+import me.jesse.models.GameStatus
+import me.jesse.models.User
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
-
 class GameTest {
-
     @Test
     fun play() {
         // create a game
-        val game = Game()
+        val game = Game(
+            playerX = playerX,
+            playerO = playerO,
+            playerToMove = playerX
+        )
         // check that the current player is x
-        assertTrue(game.currentPlayer == Player.X)
+        assertTrue(game.playerToMove == playerX)
 
         // make one play
         val newGame = game.play(0)
 
         // check that the next user is O and that there is one x on the board
-        assertTrue(newGame.currentPlayer == Player.O)
-        assertTrue(newGame.board.squares.filter { it.value == SquareValue.X }.size == 1)
+        assertTrue(newGame.playerToMove == playerO)
+        assertTrue(newGame.moves.size == 1)
+        assertTrue(newGame.moves[0]?.player == playerX && newGame.moves[0]?.squareIndex == 0)
     }
 
     @Test
     fun `play on a square that is already taken`() {
         // create a game
-        val game = Game()
+        val game = Game(
+            playerX = playerX,
+            playerO = playerO,
+            playerToMove = playerX
+        )
         // check that the current player is x
-        assertTrue(game.currentPlayer == Player.X)
+        assertTrue(game.playerToMove == playerX)
 
         // make one play
         val newGame = game.play(0)
         // make another play on the same square
         val newGame2 = newGame.play(0)
 
-        // check that the next user is X and that there is one x on the board
-        assertTrue(newGame2.currentPlayer == Player.O)
-        assertTrue(newGame2.board.squares.filter { it.value == SquareValue.X }.size == 1)
+        // check that the next user is O and that there is one x on the board
+        assertTrue(newGame2.playerToMove == playerO)
+        assertTrue(newGame2.moves.size == 1)
+
         // check that there are no o's on the board
-        assertTrue(newGame2.board.squares.none { it.value == SquareValue.O })
+        assertTrue(newGame2.moves.values.none { it.player == playerO })
     }
 
     @Test
     fun `finish the game`() {
         // create a game
-        val game = Game()
+        val game = Game(
+            playerX = playerX,
+            playerO = playerO,
+            playerToMove = playerX
+        )
         // check that the current player is x
-        assertTrue(game.currentPlayer == Player.X)
+        assertTrue(game.playerToMove == playerX)
 
         // make one play
         val newGame = game.play(0)
@@ -55,47 +71,83 @@ class GameTest {
         val newGame4 = newGame3.play(4)
         val newGame5 = newGame4.play(6)
 
-        // check that the game is completed
-        assertTrue(newGame5.winner == Player.X)
-        // check that the winner is X
-        assertTrue(newGame5.winner == Player.X)
+        // check that the game is completed and that the winner is X
+        assertTrue(newGame5.status == GameStatus.X_WON)
         // check that you cannot play anymore
         val newGame6 = newGame5.play(2)
-        assertTrue(newGame6.winner == Player.X)
+        assertTrue(newGame5.status == GameStatus.X_WON)
         // check that the last play did not change the board
-        assertTrue(newGame6.board.squares[2].value == SquareValue.EMPTY)
-    }
-
-    @Test
-    fun getBoard() {
-        val game = Game()
-        assertTrue(game.board.squares.size == 9)
-
-        val board = Board()
-        assertTrue(board == game.board)
+        assertTrue(newGame6.moves.size == 5)
+        assertTrue(newGame6.moves.values.none { it.squareIndex == 2 })
     }
 
     @Test
     fun getCurrentPlayer() {
-        val game = Game()
-        assertTrue(game.currentPlayer == Player.X)
+        val game = Game(
+            playerX = playerX,
+            playerO = playerO,
+            playerToMove = playerX
+        )
+        assertTrue(game.playerToMove == playerX)
+
         val game2 = game.play(0)
-        assertTrue(game2.currentPlayer == Player.O)
+        assertTrue(game2.playerToMove == playerO)
     }
 
     @Test
-    fun getWinner() {
-        val game = Game()
-        assertTrue(game.winner == null)
-        val game2 = game.play(0)
-        assertTrue(game2.winner == null)
-        val game3 = game2.play(1)
-        assertTrue(game3.winner == null)
-        val game4 = game3.play(3)
-        assertTrue(game4.winner == null)
-        val game5 = game4.play(4)
-        assertTrue(game5.winner == null)
-        val game6 = game5.play(6)
-        assertTrue(game6.winner == Player.X)
+    fun `check that a game is completed when drawn`() {
+        val game = Game(
+            playerX = playerX,
+            playerO = playerO,
+            playerToMove = playerX
+        )
+        // play a game that ends in a draw
+        val game2 = game.play(0) // x
+        val game3 = game2.play(1) // o
+        val game4 = game3.play(2) // x
+        val game5 = game4.play(3) // o
+        val game6 = game5.play(4) // x
+        val game7 = game6.play(6) // o
+        val game8 = game7.play(5) // x
+        val game9 = game8.play(8) // o
+        val game10 = game9.play(7) // x
+
+        assertTrue(game10.status == GameStatus.DRAW)
+        // check that another play doesn't change the board
+        val game11 = game10.play(0)
+        assertTrue(game11.status == GameStatus.DRAW)
+        assertTrue(game11.moves.size == 9)
+    }
+
+    @Test
+    fun `check that the end time is set when the game is completed`() {
+        val game = Game(
+            playerX = playerX,
+            playerO = playerO,
+            playerToMove = playerX
+        )
+        // play a game that ends in a draw
+        val game2 = game.play(0) // x
+        val game3 = game2.play(1) // o
+        val game4 = game3.play(2) // x
+        val game5 = game4.play(3) // o
+        val game6 = game5.play(4) // x
+        val game7 = game6.play(6) // o
+        val game8 = game7.play(5) // x
+        val game9 = game8.play(8) // o
+        val game10 = game9.play(7) // x
+
+        assertTrue(game10.status == GameStatus.DRAW)
+        // check that the end time is set
+        assertTrue(game10.endTime != null)
+        // check that another play doesn't change the board
+        val game11 = game10.play(0)
+        assertTrue(game11.status == GameStatus.DRAW)
+        assertTrue(game11.moves.size == 9)
+    }
+
+    companion object {
+        val playerX = User("jh", uuid4(), "Jesse", "Hill")
+        val playerO = User("js", uuid4(), "John", "Smith")
     }
 }
