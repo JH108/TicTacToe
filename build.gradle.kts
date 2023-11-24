@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.20"
     application
 }
 
@@ -36,6 +37,7 @@ kotlin {
             dependencies {
                 implementation("com.benasher44:uuid:0.8.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
             }
         }
         val commonTest by getting {
@@ -45,6 +47,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                implementation("io.ktor:ktor-serialization:1.6.2")
                 implementation("io.ktor:ktor-server-netty:2.3.2")
                 implementation("io.ktor:ktor-server-html-builder-jvm:2.3.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")

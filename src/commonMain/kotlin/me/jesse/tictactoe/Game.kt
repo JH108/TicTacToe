@@ -1,5 +1,7 @@
 package me.jesse.tictactoe
 
+import kotlinx.serialization.Serializable
+
 /**
  * Represents a game of Tic Tac Toe.
  *
@@ -8,6 +10,7 @@ package me.jesse.tictactoe
  * Players take turns putting their marks in empty squares.
  * The first player to get 3 of her marks in a row (up, down, across, or diagonally) is the winner.
  */
+@Serializable
 data class Game(
     val board: Board = Board(),
     val currentPlayer: Player = Player.X
