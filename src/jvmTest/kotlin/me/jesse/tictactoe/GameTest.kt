@@ -25,7 +25,7 @@ class GameTest {
         // check that the next user is O and that there is one x on the board
         assertTrue(newGame.playerToMove == playerO)
         assertTrue(newGame.moves.size == 1)
-        assertTrue(newGame.moves[0]?.player == playerX && newGame.moves[0]?.squareIndex == 0)
+        assertTrue(newGame.moves[0]?.playerId == playerX.id && newGame.moves[0]?.squareIndex == 0)
     }
 
     @Test
@@ -49,7 +49,7 @@ class GameTest {
         assertTrue(newGame2.moves.size == 1)
 
         // check that there are no o's on the board
-        assertTrue(newGame2.moves.values.none { it.player == playerO })
+        assertTrue(newGame2.moves.values.none { it.playerId == playerO.id })
     }
 
     @Test

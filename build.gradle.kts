@@ -36,9 +36,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
                 implementation("app.cash.sqldelight:primitive-adapters:2.0.0")
-//                implementation("com.squareup.sqldelight:runtime:2.0.0")
                 implementation("com.benasher44:uuid:0.8.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")

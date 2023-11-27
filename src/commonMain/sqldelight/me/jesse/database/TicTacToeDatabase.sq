@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS Games(
 CREATE TABLE Moves(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     game_id TEXT NOT NULL,
-    sqaure_index INTEGER NOT NULL,
+    square_index INTEGER NOT NULL,
     player_id TEXT NOT NULL, -- We may be able to use this to prevent cheating
     move_symbol TEXT NOT NULL, -- 'X', 'O', 'EMPTY'
 
@@ -40,7 +40,7 @@ INSERT INTO Games (id, player_x_id, player_o_id, player_to_move_id, start_time, 
 VALUES (?, ?, ?, ?, ?, ?);
 
 insertMove:
-INSERT INTO Moves (game_id, sqaure_index, player_id, move_symbol)
+INSERT INTO Moves (game_id, square_index, player_id, move_symbol)
 VALUES (?, ?, ?, ?);
 
 -- Update Statements
@@ -50,19 +50,11 @@ SET status = ?, end_time = ?, player_to_move_id = ?
 WHERE id = ?;
 
 -- Select Statements
-selectMovesByGameId:
-SELECT * FROM Moves
-WHERE game_id = ?;
-
-selectGameById:
-SELECT * FROM Games
-WHERE id = ?;
-
-selectGameByPlayerId:
+selectGamesByPlayerId:
 SELECT * FROM Games
 WHERE player_x_id = ? OR player_o_id = ?;
 
-selectGameByPlayerIdAndStatus:
+selectGamesByPlayerIdAndStatus:
 SELECT * FROM Games
 WHERE (player_x_id = ? OR player_o_id = ?) AND status = ?;
 
@@ -73,3 +65,13 @@ WHERE id = ?;
 selectUserByUsername:
 SELECT * FROM Users
 WHERE username = ?;
+
+selectOpenGamesForUser:
+SELECT * FROM Games
+WHERE status = 'IN_PROGRESS' AND ((player_x_id = ? AND player_o_id IS NULL) OR (player_o_id = ? AND player_x_id IS NULL));
+
+selectMovesForGame:
+SELECT * FROM Moves
+WHERE game_id = ?;
+
+-- NOTE: I could do a lot more in SQL land but I'm going to do it in the application layer for now

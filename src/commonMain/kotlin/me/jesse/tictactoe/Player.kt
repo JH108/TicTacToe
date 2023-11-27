@@ -12,9 +12,9 @@ fun Player.next(): Player {
     }
 }
 
-fun Player.toSquareValue(): SquareValue {
+fun Player.toSquareValue(): MoveSymbol {
     return when (this) {
-        Player.X -> SquareValue.X
-        Player.O -> SquareValue.O
+        Player.X -> MoveSymbol.X
+        Player.O -> MoveSymbol.O
     }
 }

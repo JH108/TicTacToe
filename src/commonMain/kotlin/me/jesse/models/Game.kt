@@ -8,7 +8,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import me.jesse.tictactoe.SquareValue
+import me.jesse.tictactoe.MoveSymbol
 
 private val winningLines = listOf(
     // Horizontal
@@ -60,8 +60,8 @@ data class Game(
 
         val move = Move(
             squareIndex = squareIndex,
-            player = playerToMove,
-            moveSymbol = if (playerToMove == playerX) SquareValue.X else SquareValue.O
+            playerId = playerToMove.id,
+            moveSymbol = if (playerToMove == playerX) MoveSymbol.X else MoveSymbol.O
         )
         // All this is needed because this is the new state but the class methods would still look at the old state
         val newMoves = moves + (squareIndex to move)
@@ -89,13 +89,13 @@ data class Game(
 
     private fun calculateWinner(newMoves: Map<Int, Move>): User? {
         return winningLines.fold<List<Int>, User?>(null) { player, line ->
-            val squareValues = line.map { newMoves[it] }
+            val recordedMoves = line.map { newMoves[it] }
 
             when {
                 // Short Circuit if we already have a winner
                 player != null -> player
-                squareValues.all { it?.player == playerX } -> playerX
-                squareValues.all { it?.player == playerO } -> playerO
+                recordedMoves.all { it?.playerId == playerX.id } -> playerX
+                recordedMoves.all { it?.playerId == playerO.id } -> playerO
                 else -> null
             }
         }

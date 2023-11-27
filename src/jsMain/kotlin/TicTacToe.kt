@@ -3,7 +3,7 @@ import emotion.react.css
 import me.jesse.models.Game
 import me.jesse.tictactoe.Board
 import me.jesse.tictactoe.Square
-import me.jesse.tictactoe.SquareValue
+import me.jesse.tictactoe.MoveSymbol
 import react.*
 import react.dom.html.ReactHTML.div
 
@@ -19,7 +19,7 @@ val TicTacToe = FC<TicTacToeProps> { props ->
     useEffect(game) {
         board = board.copy(squares = board.squares.mapIndexed { index, square ->
             if (game.moves.containsKey(index)) {
-                square.copy(value = game.moves[index]?.moveSymbol ?: SquareValue.EMPTY)
+                square.copy(value = game.moves[index]?.moveSymbol ?: MoveSymbol.EMPTY)
             } else square
         })
     }
@@ -98,7 +98,7 @@ val SquareUI = FC<SquareUIProps> { props ->
             props.onSquareClick()
         }
 
-        if (props.square.value != SquareValue.EMPTY)
+        if (props.square.value != MoveSymbol.EMPTY)
             +props.square.value.toString()
     }
 }

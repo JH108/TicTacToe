@@ -9,11 +9,20 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Square(
-    val value: SquareValue = SquareValue.EMPTY,
+    val value: MoveSymbol = MoveSymbol.EMPTY,
 )
 
-enum class SquareValue {
+enum class MoveSymbol {
     X,
     O,
     EMPTY,
+}
+
+fun MoveSymbol.valueOf(value: String): MoveSymbol {
+    return when (value) {
+        "X" -> MoveSymbol.X
+        "O" -> MoveSymbol.O
+        "EMPTY" -> MoveSymbol.EMPTY
+        else -> throw IllegalArgumentException("$value is not a valid MoveSymbol")
+    }
 }
