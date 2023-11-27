@@ -7,6 +7,7 @@ import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuidFrom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
 import me.jesse.models.Game
 import me.jesse.models.GameStatus
@@ -149,11 +150,11 @@ internal class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactor
      */
     fun getOpenGamesForUser(
         userId: String
-    ): List<Game> {
+    ): Flow<List<Game>> {
         return databaseQueries.selectOpenGamesForUser(
             player_o_id = userId,
             player_x_id = userId
-        ).executeAsList().let { games ->
+        ).asFlow().mapToList(Dispatchers.Default).map { games ->
             games.map { buildGame(it) }
         }
     }
