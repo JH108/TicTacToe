@@ -1,29 +1,75 @@
-CREATE TABLE Games (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    current_player TEXT NOT NULL,
-    board TEXT NOT NULL
-);
-
-CREATE TABLE Squares (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  game_id INTEGER NOT NULL,
-  position INTEGER NOT NULL,
-  value TEXT NOT NULL,
-
-  FOREIGN KEY(game_id) REFERENCES Games(id)
-);
-
-insertSquare:
-INSERT INTO Squares (game_id, position, value)
-VALUES (?, ?, ?);
-
-selectSquaresByGame:
-SELECT * FROM Squares
-WHERE game_id = ?;
-
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users(
     id TEXT PRIMARY KEY,
-    username TEXT NOT NULL,
+    username TEXT UNIQUE NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Games(
+    id TEXT PRIMARY KEY,
+    player_x_id TEXT NOT NULL,
+    player_o_id TEXT NOT NULL,
+    player_to_move_id TEXT NOT NULL,
+    start_time TEXT NOT NULL,
+    end_time TEXT,
+    status TEXT NOT NULL, -- 'IN_PROGRESS', 'X_WON', 'O_WON', 'DRAW'
+
+    FOREIGN KEY (player_x_id) REFERENCES Users(id),
+    FOREIGN KEY (player_o_id) REFERENCES Users(id),
+    FOREIGN KEY (player_to_move_id) REFERENCES Users(id)
+);
+
+CREATE TABLE Moves(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    game_id TEXT NOT NULL,
+    sqaure_index INTEGER NOT NULL,
+    player_id TEXT NOT NULL, -- We may be able to use this to prevent cheating
+    move_symbol TEXT NOT NULL, -- 'X', 'O', 'EMPTY'
+
+    FOREIGN KEY (game_id) REFERENCES Games(id),
+    FOREIGN KEY (player_id) REFERENCES Users(id)
+);
+
+-- Insert Statements
+insertUser:
+INSERT INTO Users (id, username, first_name, last_name)
+VALUES (?, ?, ?, ?);
+
+createGame:
+INSERT INTO Games (id, player_x_id, player_o_id, player_to_move_id, start_time, status)
+VALUES (?, ?, ?, ?, ?, ?);
+
+insertMove:
+INSERT INTO Moves (game_id, sqaure_index, player_id, move_symbol)
+VALUES (?, ?, ?, ?);
+
+-- Update Statements
+updateGameStatus:
+UPDATE Games
+SET status = ?, end_time = ?, player_to_move_id = ?
+WHERE id = ?;
+
+-- Select Statements
+selectMovesByGameId:
+SELECT * FROM Moves
+WHERE game_id = ?;
+
+selectGameById:
+SELECT * FROM Games
+WHERE id = ?;
+
+selectGameByPlayerId:
+SELECT * FROM Games
+WHERE player_x_id = ? OR player_o_id = ?;
+
+selectGameByPlayerIdAndStatus:
+SELECT * FROM Games
+WHERE (player_x_id = ? OR player_o_id = ?) AND status = ?;
+
+selectUserById:
+SELECT * FROM Users
+WHERE id = ?;
+
+selectUserByUsername:
+SELECT * FROM Users
+WHERE username = ?;
