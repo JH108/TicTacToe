@@ -35,7 +35,7 @@ insertUser:
 INSERT INTO Users (id, username, first_name, last_name)
 VALUES (?, ?, ?, ?);
 
-createGame:
+insertGame:
 INSERT INTO Games (id, player_x_id, player_o_id, player_to_move_id, start_time, status)
 VALUES (?, ?, ?, ?, ?, ?);
 
