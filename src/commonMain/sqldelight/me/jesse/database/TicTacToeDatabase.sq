@@ -49,14 +49,26 @@ UPDATE Games
 SET status = ?, end_time = ?, player_to_move_id = ?
 WHERE id = ?;
 
+upsertMove {
+    UPDATE Moves
+    SET square_index = :square_index,
+        player_id = :player_id,
+        move_symbol = :move_symbol
+    WHERE game_id = :game_id AND square_index = :square_index;
+
+    INSERT OR IGNORE INTO Moves (game_id, square_index, player_id, move_symbol)
+    VALUES (:game_id, :square_index, :player_id, :move_symbol);
+}
+
 -- Select Statements
+-- TODO: Add pagination to the queries that have the potential to return many results
 selectGamesByPlayerId:
 SELECT * FROM Games
-WHERE player_x_id = ? OR player_o_id = ?;
+WHERE player_x_id = :player_id OR player_o_id = :player_id;
 
 selectGamesByPlayerIdAndStatus:
 SELECT * FROM Games
-WHERE (player_x_id = ? OR player_o_id = ?) AND status = ?;
+WHERE (player_x_id = :player_id OR player_o_id = :player_id) AND status = ?;
 
 selectUserById:
 SELECT * FROM Users
@@ -68,7 +80,7 @@ WHERE username = ?;
 
 selectOpenGamesForUser:
 SELECT * FROM Games
-WHERE status = 'IN_PROGRESS' AND ((player_x_id = ? AND player_o_id IS NULL) OR (player_o_id = ? AND player_x_id IS NULL));
+WHERE status = 'IN_PROGRESS' AND ((player_x_id = :player_id AND player_o_id IS NULL) OR (player_o_id = :player_id AND player_x_id IS NULL));
 
 selectMovesForGame:
 SELECT * FROM Moves

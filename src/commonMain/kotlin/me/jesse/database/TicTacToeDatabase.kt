@@ -72,6 +72,14 @@ internal class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactor
                 player_to_move_id = game.playerToMove.id.toString(),
                 id = game.id.toString()
             )
+            game.moves.forEach { (_, move) ->
+                databaseQueries.upsertMove(
+                    move_symbol = move.moveSymbol.toString(),
+                    game_id = game.id.toString(),
+                    square_index = move.squareIndex.toLong(),
+                    player_id = move.playerId.toString()
+                )
+            }
         }
     }
 
@@ -100,8 +108,7 @@ internal class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactor
         playerId: String
     ): Flow<List<Game>> {
         return databaseQueries.selectGamesByPlayerId(
-            player_x_id = playerId,
-            player_o_id = playerId
+            player_id = playerId
         ) { id, player_x_id, player_o_id, player_to_move_id, start_time, end_time, status ->
             buildGame(
                 Games(
@@ -124,8 +131,7 @@ internal class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactor
         gameStatus: GameStatus
     ): Flow<List<Game>> {
         return databaseQueries.selectGamesByPlayerIdAndStatus(
-            player_x_id = playerId,
-            player_o_id = playerId,
+            player_id = playerId,
             status = gameStatus.toString()
         ) { id, player_x_id, player_o_id, player_to_move_id, start_time, end_time, status ->
             buildGame(
@@ -152,8 +158,7 @@ internal class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactor
         userId: String
     ): Flow<List<Game>> {
         return databaseQueries.selectOpenGamesForUser(
-            player_o_id = userId,
-            player_x_id = userId
+            player_id = userId,
         ).asFlow().mapToList(Dispatchers.Default).map { games ->
             games.map { buildGame(it) }
         }

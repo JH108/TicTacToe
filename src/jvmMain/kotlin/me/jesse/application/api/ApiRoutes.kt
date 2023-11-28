@@ -5,6 +5,7 @@ import io.ktor.server.routing.*
 
 /**
  * Route for registering a new player.
+ * Route for fetching a player's profile.
  * Route for starting a new game.
  * Route for saving a game.
  * Route for loading a game.
@@ -16,6 +17,9 @@ fun Application.apiRoutes() {
             post("/register") {
 
             }
+            get("/profile?username={username}") {
+
+            }
             post("/game") {
 
             }
@@ -25,7 +29,7 @@ fun Application.apiRoutes() {
             post("/load") {
 
             }
-            post("/leaderboard") {
+            get("/leaderboard") {
 
             }
         }
