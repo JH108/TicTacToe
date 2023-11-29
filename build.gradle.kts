@@ -52,7 +52,10 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
+                implementation("io.ktor:ktor-server-core-jvm:2.3.2")
+                implementation("io.ktor:ktor-server-resources:2.3.2")
                 implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
+                implementation("io.ktor:ktor-server-content-negotiation-jvm:2.3.2")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
                 implementation("io.ktor:ktor-server-netty:2.3.2")
                 implementation("io.ktor:ktor-server-html-builder-jvm:2.3.2")

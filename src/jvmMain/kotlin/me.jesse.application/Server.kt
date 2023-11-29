@@ -9,6 +9,8 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.routing.*
 import kotlinx.html.*
 import me.jesse.application.api.apiRoutes
+import me.jesse.application.plugins.configureSerialization
+import me.jesse.database.configureDatabases
 
 fun HTML.index() {
     head {
@@ -29,6 +31,8 @@ fun main() {
 }
 
 private fun Application.startApplication() {
+    configureDatabases()
+    configureSerialization()
     apiRoutes()
     routing {
         get("/") {

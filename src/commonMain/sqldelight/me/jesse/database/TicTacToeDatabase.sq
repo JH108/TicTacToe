@@ -80,10 +80,19 @@ WHERE username = ?;
 
 selectOpenGamesForUser:
 SELECT * FROM Games
-WHERE status = 'IN_PROGRESS' AND ((player_x_id = :player_id AND player_o_id IS NULL) OR (player_o_id = :player_id AND player_x_id IS NULL));
+WHERE status = 'IN_PROGRESS' AND (
+    (player_x_id = :player_id AND player_o_id IS NULL) OR
+    (player_o_id = :player_id AND player_x_id IS NULL)
+);
 
 selectMovesForGame:
 SELECT * FROM Moves
 WHERE game_id = ?;
+
+selectGameByPlayerIdsAndGameStatus:
+SELECT * FROM Games
+WHERE status = :game_status AND
+    (player_x_id = :player_one_id OR player_o_id = :player_one_id) AND
+    (player_x_id = :player_two_id OR player_o_id = :player_two_id);
 
 -- NOTE: I could do a lot more in SQL land but I'm going to do it in the application layer for now

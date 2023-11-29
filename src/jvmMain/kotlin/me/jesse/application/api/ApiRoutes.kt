@@ -1,7 +1,20 @@
 package me.jesse.application.api
 
+import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withContext
+import me.jesse.application.resources.LoadGame
+import me.jesse.application.resources.RegisterUser
+import me.jesse.application.resources.SaveGame
+import me.jesse.application.resources.StartGame
+import me.jesse.database.ticTacToeSdk
+import me.jesse.models.Game
+import me.jesse.models.GameStatus
+import me.jesse.models.User
 
 /**
  * Route for registering a new player.
@@ -14,19 +27,84 @@ import io.ktor.server.routing.*
 fun Application.apiRoutes() {
     routing {
         route("/api") {
-            post("/register") {
+            post<RegisterUser> { user ->
+                val existingUser = application.ticTacToeSdk.database.getUserByUsername(user.username).firstOrNull()
 
+                if (existingUser != null) {
+                    call.respond(existingUser)
+                    return@post
+                }
+
+                val newUser = User(
+                    username = user.username,
+                    firstName = user.firstName,
+                    lastName = user.lastName
+                )
+
+                try {
+                    withContext(Dispatchers.IO) { application.ticTacToeSdk.database.insertUser(newUser) }
+                } catch (e: Exception) {
+                    call.respond(status = HttpStatusCode.InternalServerError, message = e)
+                }
+                call.respond(newUser)
             }
             get("/profile?username={username}") {
+                val username = call.parameters["username"]
+
+                if (username == null) {
+                    call.respond(status = HttpStatusCode.NotAcceptable, message = "The username parameter is missing.")
+                    return@get
+                }
+
+                val user = application.ticTacToeSdk.database.getUserByUsername(username).firstOrNull()
+
+                if (user == null) {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = "The user with the username $username was not found."
+                    )
+                    return@get
+                }
+
+                call.respond(user)
+            }
+            post<StartGame> { startGame ->
+                val playerOne = startGame.playerOne
+                val playerTwo = startGame.playerTwo
+
+                val existingGame = application.ticTacToeSdk.database.getGameByPlayerIdsAndGameStatus(
+                    playerOne.id.toString(),
+                    playerTwo.id.toString(),
+                    GameStatus.IN_PROGRESS
+                ).firstOrNull()
+
+                if (existingGame != null) {
+                    call.respond(existingGame)
+                    return@post
+                }
+
+                val firstPlayer = if (listOf(true, false).random()) playerOne else playerTwo
+                val newGame = Game(
+                    playerX = playerOne,
+                    playerO = playerTwo,
+                    playerToMove = firstPlayer
+                )
+
+                try {
+                    withContext(Dispatchers.IO) {
+                        application.ticTacToeSdk.database.insertGame(newGame)
+                    }
+                } catch (e: Exception) {
+                    call.respond(status = HttpStatusCode.InternalServerError, message = e)
+                }
+
+                call.respond(newGame)
+            }
+            post<SaveGame> {
 
             }
-            post("/game") {
-
-            }
-            post("/save") {
-
-            }
-            post("/load") {
+            // This one might be redundant since the start game is basically start or load
+            post<LoadGame> {
 
             }
             get("/leaderboard") {

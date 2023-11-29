@@ -15,7 +15,7 @@ import me.jesse.models.Move
 import me.jesse.models.User
 import me.jesse.tictactoe.MoveSymbol
 
-internal class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
+class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
     private val driver = databaseDriverFactory.createDriver()
     private val database = TicTacToeDatabase(driver)
     private val databaseQueries = database.ticTacToeDatabaseQueries
@@ -126,6 +126,37 @@ internal class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactor
             .mapToList(Dispatchers.Default)
     }
 
+    fun getGameByPlayerIdsAndGameStatus(
+        playerOneId: String,
+        playerTwoId: String,
+        gameStatus: GameStatus
+    ): Flow<List<Game>> {
+        return databaseQueries.selectGameByPlayerIdsAndGameStatus(
+            player_one_id = playerOneId,
+            player_two_id = playerTwoId,
+            game_status = gameStatus.toString()
+        ) { id, player_x_id, player_o_id, player_to_move_id, start_time, end_time, status ->
+            buildGame(
+                Games(
+                    id = id,
+                    player_x_id = player_x_id,
+                    player_o_id = player_o_id,
+                    player_to_move_id = player_to_move_id,
+                    status = status,
+                    start_time = start_time,
+                    end_time = end_time
+                )
+            )
+        }
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+    }
+
+    /**
+     * Get all games for a given player and game status.
+     * @param playerId The player to get games for.
+     * @param gameStatus The status of the games to get.
+     */
     fun getGamesByPlayerIdAndGameStatus(
         playerId: String,
         gameStatus: GameStatus
