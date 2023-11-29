@@ -9,10 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
-import me.jesse.models.Game
-import me.jesse.models.GameStatus
-import me.jesse.models.Move
-import me.jesse.models.User
+import me.jesse.models.*
 import me.jesse.tictactoe.MoveSymbol
 
 class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
@@ -104,6 +101,23 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
             .mapToOne(Dispatchers.Default)
     }
 
+    fun getTopFivePlayers(): List<Pair<User, UserStats>> {
+        return databaseQueries.selectTopFivePlayers { id, username, first_name, last_name, total_games, total_x_wins, total_o_wins, total_draws ->
+            User(
+                id = uuidFrom(id),
+                username = username,
+                firstName = first_name,
+                lastName = last_name
+            ) to UserStats(
+                id = uuidFrom(id),
+                totalGames = total_games,
+                totalXWins = total_x_wins,
+                totalOWins = total_o_wins,
+                totalDraws = total_draws
+            )
+        }.executeAsList()
+    }
+
     fun getGamesByPlayerId(
         playerId: String
     ): Flow<List<Game>> {
@@ -126,6 +140,8 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
             .mapToList(Dispatchers.Default)
     }
 
+    // TODO: Reduce the amount of database queries needed to build a game now that I've figured out the syntax for
+    //  doing joins in SQLDelight.
     fun getGameByPlayerIdsAndGameStatus(
         playerOneId: String,
         playerTwoId: String,
@@ -238,6 +254,10 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
             .fold(emptyMap()) { acc, move ->
                 acc + (move.squareIndex to move)
             }
+    }
+
+    fun loadFakeData() {
+        // create five users
     }
 }
 

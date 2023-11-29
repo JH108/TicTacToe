@@ -95,4 +95,21 @@ WHERE status = :game_status AND
     (player_x_id = :player_one_id OR player_o_id = :player_one_id) AND
     (player_x_id = :player_two_id OR player_o_id = :player_two_id);
 
+selectTopFivePlayers {
+SELECT
+    u.id,
+    u.username,
+    u.first_name,
+    u.last_name,
+    COUNT(g.id) AS total_games,
+    SUM(CASE WHEN g.status = 'X_WON' AND g.player_x_id = u.id THEN 1 ELSE 0 END) AS total_x_wins,
+    SUM(CASE WHEN g.status = 'O_WON' AND g.player_o_id = u.id THEN 1 ELSE 0 END) AS total_o_wins,
+    SUM(CASE WHEN g.status = 'DRAW' THEN 1 ELSE 0 END) AS total_draws
+FROM Users u
+LEFT JOIN Games g ON g.player_x_id = u.id OR g.player_o_id = u.id
+GROUP BY u.id
+ORDER BY (total_x_wins + total_o_wins) / total_games DESC
+LIMIT 5;
+}
+
 -- NOTE: I could do a lot more in SQL land but I'm going to do it in the application layer for now

@@ -23,6 +23,8 @@ import me.jesse.models.User
  * Route for saving a game.
  * Route for loading a game.
  * Route for creating a leaderboard.
+ *
+ * TODO: Move all of the database queries to the IO dispatcher.
  */
 fun Application.apiRoutes() {
     routing {
@@ -108,7 +110,13 @@ fun Application.apiRoutes() {
 
             }
             get("/leaderboard") {
+                val topFivePlayers = application.ticTacToeSdk.database.getTopFivePlayers()
 
+                call.respond(topFivePlayers)
+            }
+            get("/load-fake-data") {
+                application.ticTacToeSdk.database.loadFakeData()
+                call.respond("Fake data loaded.")
             }
         }
     }
