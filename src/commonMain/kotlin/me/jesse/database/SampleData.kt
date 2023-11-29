@@ -2,7 +2,6 @@ package me.jesse.database
 
 import com.benasher44.uuid.Uuid
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import me.jesse.models.Game
@@ -40,6 +39,14 @@ object SampleData {
         username = "jacobhill",
         firstName = "Jacob",
         lastName = "Hill"
+    )
+
+    val users = listOf(
+        johnSmith,
+        janeDoe,
+        jesseHill,
+        jessicaHill,
+        jacobHill
     )
 
     private val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -203,7 +210,20 @@ object SampleData {
         )
     )
 
-    fun moveO(userId: Uuid, squareIndex: Int): Move {
+    val games = listOf(
+        game1,
+        game2,
+        game3,
+        game4,
+        game5,
+        game6,
+        game7,
+        game8,
+        game9,
+        game10
+    )
+
+    private fun moveO(userId: Uuid, squareIndex: Int): Move {
         return Move(
             squareIndex = squareIndex,
             playerId = userId,
@@ -211,7 +231,7 @@ object SampleData {
         )
     }
 
-    fun moveX(userId: Uuid, squareIndex: Int): Move {
+    private fun moveX(userId: Uuid, squareIndex: Int): Move {
         return Move(
             squareIndex = squareIndex,
             playerId = userId,

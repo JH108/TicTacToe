@@ -82,6 +82,36 @@ class GameTest {
     }
 
     @Test
+    fun `finish a game where O wins`() {
+        // create a game
+        val game = Game(
+            playerX = playerX,
+            playerO = playerO,
+            playerToMove = playerX
+        )
+        // check that the current player is x
+        assertTrue(game.playerToMove == playerX)
+
+        // make one play
+        val newGame = game.play(0)
+        // make another play on the same square
+        val newGame2 = newGame.play(1)
+        val newGame3 = newGame2.play(2)
+        val newGame4 = newGame3.play(4)
+        val newGame5 = newGame4.play(3)
+        val newGame6 = newGame5.play(7)
+
+        // check that the game is completed and that the winner is X
+        assertTrue(newGame6.status == GameStatus.O_WON)
+        // check that you cannot play anymore
+        val newGame7 = newGame6.play(8)
+        assertTrue(newGame6.status == GameStatus.O_WON)
+        // check that the last play did not change the board
+        assertTrue(newGame7.moves.size == 6)
+        assertTrue(newGame7.moves.values.none { it.squareIndex == 8 })
+    }
+
+    @Test
     fun getCurrentPlayer() {
         val game = Game(
             playerX = playerX,

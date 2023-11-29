@@ -42,6 +42,14 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
                 status = game.status.toString(),
                 start_time = game.startTime.toString()
             )
+            game.moves.forEach { (_, move) ->
+                databaseQueries.upsertMove(
+                    move_symbol = move.moveSymbol.toString(),
+                    game_id = game.id.toString(),
+                    square_index = move.squareIndex.toLong(),
+                    player_id = move.playerId.toString()
+                )
+            }
         }
     }
 
@@ -257,7 +265,9 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
     fun loadFakeData() {
-        // create five users
+        // insert users from SampleData
+        SampleData.users.forEach { insertUser(it) }
+        SampleData.games.forEach { insertGame(it) }
     }
 }
 
