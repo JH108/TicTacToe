@@ -9,6 +9,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.routing.*
 import kotlinx.html.*
 import me.jesse.application.api.apiRoutes
+import me.jesse.application.plugins.configureMonitoring
 import me.jesse.application.plugins.configureSerialization
 import me.jesse.database.configureDatabases
 
@@ -16,7 +17,9 @@ fun HTML.index() {
     head {
         title("TicTacToe")
     }
-    body {
+    body(
+        classes = "margin: 0; padding: 0;"
+    ) {
         main {
             id = "root"
         }
@@ -33,6 +36,7 @@ fun main() {
 private fun Application.startApplication() {
     configureDatabases()
     configureSerialization()
+    configureMonitoring()
     apiRoutes()
     routing {
         get("/") {

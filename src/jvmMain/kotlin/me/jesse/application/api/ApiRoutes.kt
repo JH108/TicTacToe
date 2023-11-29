@@ -126,7 +126,7 @@ fun Application.apiRoutes() {
                 withContext(Dispatchers.IO) {
                     application.ticTacToeSdk.database.loadFakeData()
                 }
-                call.respond("Fake data loaded.")
+                call.respond("ok")
             }
         }
     }

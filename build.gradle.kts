@@ -54,6 +54,7 @@ kotlin {
                 implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
                 implementation("io.ktor:ktor-server-core-jvm:2.3.2")
                 implementation("io.ktor:ktor-server-resources:2.3.2")
+                implementation("io.ktor:ktor-server-call-logging-jvm:2.3.2")
                 implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
                 implementation("io.ktor:ktor-server-content-negotiation-jvm:2.3.2")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
@@ -65,10 +66,17 @@ kotlin {
         val jvmTest by getting
         val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-react:18.2.0-pre.346")
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom:18.2.0-pre.346")
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion:11.9.3-pre.346")
-                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-router-dom:6.3.0-pre.346")
+                // React, React DOM + Wrappers
+                implementation(project.dependencies.enforcedPlatform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:1.0.0-pre.430"))
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
+
+                // Kotlin React Emotion (CSS)
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
+
+                // Coroutines & serialization
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
             }
         }
         val jsTest by getting

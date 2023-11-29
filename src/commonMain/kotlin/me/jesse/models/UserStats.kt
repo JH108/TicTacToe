@@ -12,4 +12,7 @@ data class UserStats(
     val totalXWins: Long?,
     val totalOWins: Long?,
     val totalDraws: Long?
-)
+) {
+    val totalWins = (totalXWins ?: 0) + (totalOWins ?: 0)
+    val winPercent = totalWins.toDouble() / totalGames.toDouble()
+}
