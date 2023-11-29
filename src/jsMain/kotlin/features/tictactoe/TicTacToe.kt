@@ -1,3 +1,5 @@
+package features.tictactoe
+
 import csstype.*
 import emotion.react.css
 import me.jesse.models.Game
