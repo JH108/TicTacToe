@@ -23,14 +23,16 @@ import me.jesse.models.User
  * Route for saving a game.
  * Route for loading a game.
  * Route for creating a leaderboard.
- *
- * TODO: Move all of the database queries to the IO dispatcher.
  */
 fun Application.apiRoutes() {
     routing {
         route("/api") {
             post<RegisterUser> { user ->
-                val existingUser = application.ticTacToeSdk.database.getUserByUsername(user.username).firstOrNull()
+                val existingUser = withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.getUserByUsername(
+                        user.username
+                    ).firstOrNull()
+                }
 
                 if (existingUser != null) {
                     call.respond(existingUser)
@@ -58,7 +60,9 @@ fun Application.apiRoutes() {
                     return@get
                 }
 
-                val user = application.ticTacToeSdk.database.getUserByUsername(username).firstOrNull()
+                val user = withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.getUserByUsername(username).firstOrNull()
+                }
 
                 if (user == null) {
                     call.respond(
@@ -74,11 +78,13 @@ fun Application.apiRoutes() {
                 val playerOne = startGame.playerOne
                 val playerTwo = startGame.playerTwo
 
-                val existingGame = application.ticTacToeSdk.database.getGameByPlayerIdsAndGameStatus(
-                    playerOne.id.toString(),
-                    playerTwo.id.toString(),
-                    GameStatus.IN_PROGRESS
-                ).firstOrNull()
+                val existingGame = withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.getGameByPlayerIdsAndGameStatus(
+                        playerOne.id.toString(),
+                        playerTwo.id.toString(),
+                        GameStatus.IN_PROGRESS
+                    ).firstOrNull()
+                }
 
                 if (existingGame != null) {
                     call.respond(existingGame)
@@ -110,12 +116,16 @@ fun Application.apiRoutes() {
 
             }
             get("/leaderboard") {
-                val topFivePlayers = application.ticTacToeSdk.database.getTopFivePlayers()
+                val topFivePlayers = withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.getTopFivePlayers()
+                }
 
                 call.respond(topFivePlayers)
             }
             get("/load-fake-data") {
-                application.ticTacToeSdk.database.loadFakeData()
+                withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.loadFakeData()
+                }
                 call.respond("Fake data loaded.")
             }
         }
