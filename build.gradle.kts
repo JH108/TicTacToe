@@ -70,6 +70,8 @@ kotlin {
                 implementation(project.dependencies.enforcedPlatform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:1.0.0-pre.430"))
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
+                // Kotlin React Router DOM
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-router-dom")
 
                 // Kotlin React Emotion (CSS)
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")

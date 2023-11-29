@@ -12,9 +12,7 @@ fun main() {
     val container = document.createElement("div")
     document.body!!.appendChild(container)
 
-    val clientApplication = ClientApplication.create {
-        configuration = ClientConfiguration
-    }
+    val navigation = Navigation.create()
 
-    createRoot(container).render(clientApplication)
+    createRoot(container).render(navigation)
 }

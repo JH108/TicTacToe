@@ -10,6 +10,9 @@ import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h2
 import react.dom.html.ReactHTML.span
+import react.router.dom.Link
+import react.router.useLocation
+import react.router.useNavigate
 
 external interface ClientApplicationProps : Props {
     var configuration: ClientConfiguration
@@ -18,6 +21,7 @@ external interface ClientApplicationProps : Props {
 val mainScope = MainScope()
 
 val ClientApplication = FC<ClientApplicationProps> { props ->
+    val navigate = useNavigate()
     // load the initial data
     var initialDataHasLoaded by useState(false)
 
@@ -37,42 +41,7 @@ val ClientApplication = FC<ClientApplicationProps> { props ->
             width = 100.pct
         }
 
-        // header
-        div {
-            css {
-                display = Display.flex
-                flexDirection = FlexDirection.row
-                justifyContent = JustifyContent.spaceBetween
-                alignItems = AlignItems.center
-                height = 8.vh
-                width = 100.pct
-                padding = 10.px
-                // light gray
-                backgroundColor = Color("#f5f5f5")
-            }
 
-            // side menu button
-            button {
-                css {
-                    backgroundColor = Color("#f5a5a5")
-                }
-                +"Menu"
-            }
-
-            // screen title
-            h2 {
-                +"The Title"
-            }
-
-            // user profile icon
-            button {
-                css {
-                    backgroundColor = Color("#f5a5a5")
-                }
-
-                +"Profile"
-            }
-        }
 
         if (!initialDataHasLoaded) {
             div {
@@ -89,9 +58,42 @@ val ClientApplication = FC<ClientApplicationProps> { props ->
                 }
             }
         } else {
-            child(
-                LeaderBoard.create()
-            )
+            div {
+                css {
+                    display = Display.flex
+                    flexDirection = FlexDirection.row
+                    justifyContent = JustifyContent.center
+                    alignItems = AlignItems.center
+                    height = 100.vh
+                }
+
+                button {
+                    css {
+                        margin = 10.px
+                        padding = 10.px
+                        backgroundColor = Color("#a5d8f5")
+                    }
+
+                    onClick = {
+                        navigate("/play")
+                    }
+
+                    +"Start Game"
+                }
+                button {
+                    css {
+                        margin = 10.px
+                        padding = 10.px
+                        backgroundColor = Color("#a5d8f5")
+                    }
+
+                    onClick = {
+                        navigate("/profile")
+                    }
+
+                    +"Create Account"
+                }
+            }
         }
     }
 }
