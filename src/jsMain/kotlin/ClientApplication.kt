@@ -1,18 +1,17 @@
 import csstype.*
 import emotion.react.css
-import features.leaderboard.LeaderBoard
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
-import react.*
+import react.FC
+import react.Props
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h2
-import react.dom.html.ReactHTML.span
-import react.router.dom.Link
-import react.router.useLocation
 import react.router.useNavigate
+import react.useEffectOnce
+import react.useState
 
 external interface ClientApplicationProps : Props {
     var configuration: ClientConfiguration
@@ -40,8 +39,6 @@ val ClientApplication = FC<ClientApplicationProps> { props ->
             height = 100.vh
             width = 100.pct
         }
-
-
 
         if (!initialDataHasLoaded) {
             div {
