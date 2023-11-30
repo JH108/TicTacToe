@@ -63,3 +63,26 @@ graph LR
     A[Ktor - KMM] --> B[Spring Boot]
     B --> C[Sqlite]
 ```
+
+## Running the Application
+
+First, clone the project and navigate to the root of the project:
+
+```shell
+git clone https://github.com/JH108/TicTacToe.git
+cd TicTacToe
+```
+
+The easy way is to install [Intellij IDEA Community Edition](https://www.jetbrains.com/idea/download/?section=mac) and open the project. Then select the run configuration called `Run` and click the green play button.
+
+Another option is if you've got Java 17 or greater installed, you can run the following command from the root of the project:
+
+```shell
+./gradlew run
+```
+
+If you haven't installed Java but want the experience then I recommend using [SDKMAN](https://sdkman.io/) to install it. Once you've installed SDKMAN, run the following command (or read the sdkman docs):
+
+```shell
+sdk install java 17.0.0-zulu
+```
