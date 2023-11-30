@@ -5,14 +5,12 @@ import features.tictactoe.TicTacToe
 import features.user.Profile
 import react.VFC
 import react.create
-import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h2
 import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
 import react.router.dom.Link
-import react.router.useLocation
 
 val Navigation = VFC {
     BrowserRouter {
@@ -92,7 +90,7 @@ val Navigation = VFC {
                 Route {
                     key = "Home"
                     path = "/"
-                    element = ClientApplication.create()
+                    element = Home.create()
                 }
                 Route {
                     key = "Leaderboard"
