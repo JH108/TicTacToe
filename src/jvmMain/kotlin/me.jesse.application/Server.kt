@@ -17,13 +17,23 @@ fun HTML.index() {
     head {
         title("TicTacToe")
     }
-    body(
-        classes = "margin: 0; padding: 0;"
-    ) {
+    body {
         main {
             id = "root"
         }
         script(src = "/static/TicTacToe.js") {}
+        style(type = "text/css") {
+            unsafe {
+                raw("""
+                    html, body {
+                        height: 100%;
+                        width: 100%;
+                        margin: 0;
+                        padding: 0;
+                    }
+                """.trimIndent())
+            }
+        }
     }
 }
 

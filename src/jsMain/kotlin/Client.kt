@@ -10,10 +10,19 @@ object ClientConfiguration {
 }
 
 fun main() {
-    val container = document.createElement("div")
-    document.body!!.appendChild(container)
+    val container = document.getElementById("root")
 
     val app = App.create()
+
+    if (container == null) {
+        val errorRoot = document.createElement("div")
+
+        errorRoot.textContent = "Error: Could not find root element."
+
+        document.body?.appendChild(errorRoot)
+
+        return
+    }
 
     createRoot(container).render(app)
 }

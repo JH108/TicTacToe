@@ -12,80 +12,100 @@ import react.router.Routes
 import react.router.dom.BrowserRouter
 import react.router.dom.Link
 
+val HeaderLinks = VFC {
+    div {
+        css {
+            display = Display.flex
+            flexDirection = FlexDirection.row
+            justifyContent = JustifyContent.spaceBetween
+            alignItems = AlignItems.center
+        }
+
+        Link {
+            css {
+                margin = 10.px
+                padding = 10.px
+                color = Color("#000000")
+            }
+
+            to = "/"
+
+            +"Home"
+        }
+
+        Link {
+            css {
+                margin = 10.px
+                padding = 10.px
+                color = Color("#000000")
+            }
+
+            to = "/leaderboard"
+
+            +"Leaderboard"
+        }
+
+        Link {
+            css {
+                margin = 10.px
+                padding = 10.px
+                color = Color("#000000")
+            }
+
+            to = "/profile"
+
+            +"Profile"
+        }
+
+        Link {
+            css {
+                margin = 10.px
+                padding = 10.px
+                color = Color("#000000")
+            }
+
+            to = "/play"
+
+            +"Find Game"
+        }
+    }
+}
+
+val Header = VFC {
+    div {
+        css {
+            display = Display.flex
+            flexDirection = FlexDirection.row
+            justifyContent = JustifyContent.spaceBetween
+            alignItems = AlignItems.center
+            width = 100.pct
+            padding = 8.px
+            backgroundColor = Color("#f5f5f5")
+        }
+
+        Link {
+            css {
+                margin = 10.px
+                padding = 10.px
+                color = Color("#000000")
+            }
+
+            to = "/"
+
+            h2 {
+                +"TicTacToe"
+            }
+        }
+
+        HeaderLinks()
+    }
+}
+
 val Navigation = VFC {
     BrowserRouter {
         div {
-            // header
-            div {
-                css {
-                    display = Display.flex
-                    flexDirection = FlexDirection.row
-                    justifyContent = JustifyContent.spaceBetween
-                    alignItems = AlignItems.center
-                    width = 100.pct
-                    padding = 25.px
-                    // light gray
-                    backgroundColor = Color("#f5f5f5")
-                }
+            Header()
 
-                div {
-                    css {
-                        display = Display.flex
-                        flexDirection = FlexDirection.row
-                        justifyContent = JustifyContent.spaceBetween
-                        alignItems = AlignItems.center
-                    }
-
-                    Link {
-                        css {
-                            margin = 10.px
-                            padding = 10.px
-                        }
-
-                        to = "/"
-
-                        +"Home"
-                    }
-
-                    Link {
-                        css {
-                            margin = 10.px
-                            padding = 10.px
-                        }
-
-                        to = "/leaderboard"
-
-                        +"Leaderboard"
-                    }
-
-                    Link {
-                        css {
-                            margin = 10.px
-                            padding = 10.px
-                        }
-
-                        to = "/profile"
-
-                        +"Profile"
-                    }
-
-                    Link {
-                        css {
-                            margin = 10.px
-                            padding = 10.px
-                        }
-
-                        to = "/play"
-
-                        +"Find Game"
-                    }
-                }
-
-                // screen title
-                h2 {
-                    +"TicTacToe"
-                }
-            }
             Routes {
                 Route {
                     key = "Home"

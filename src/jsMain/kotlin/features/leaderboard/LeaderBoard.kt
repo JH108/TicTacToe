@@ -1,6 +1,7 @@
 package features.leaderboard
 
 import ClientConfiguration
+import components.Card
 import csstype.*
 import emotion.react.css
 import kotlinx.browser.window
@@ -10,11 +11,13 @@ import kotlinx.coroutines.launch
 import me.jesse.models.User
 import me.jesse.models.UserStats
 import me.jesse.serializers.CommonSerializerModule
-import react.*
+import react.FC
+import react.Props
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.h4
 import react.dom.html.ReactHTML.p
+import react.useEffectOnce
+import react.useState
 
 val mainScope = MainScope()
 
@@ -67,22 +70,10 @@ external interface UserStatProps : Props {
 }
 
 val UserStatCard = FC<UserStatProps> { props ->
-    div {
-        css {
-            margin = 10.px
-            padding = 10.px
-            display = Display.flex
-            flexDirection = FlexDirection.column
-            justifyContent = JustifyContent.center
-            alignItems = AlignItems.center
-            backgroundColor = Color("#f5f5f5")
-            borderRadius = 10.px
-            width = 300.px
-            height = 300.px
-        }
-        h4 {
-            +"${props.user.username} Statistics | ${props.stats.winPercent}%"
-        }
+    Card {
+        title = props.user.username
+        subtitle = "${props.stats.winPercent}%"
+
         p {
             +"Wins: ${props.stats.totalWins}"
         }

@@ -4,7 +4,6 @@ import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
-import me.jesse.models.User
 import react.*
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
@@ -22,8 +21,6 @@ val Home = FC<ClientApplicationProps> { props ->
     // load the initial data
     val user = useContext(UserContext)
     var initialDataHasLoaded by useState(false)
-
-    console.log("user: ", user)
 
     useEffectOnce {
         mainScope.launch {
@@ -65,31 +62,34 @@ val Home = FC<ClientApplicationProps> { props ->
                     height = 100.vh
                 }
 
-                button {
-                    css {
-                        margin = 10.px
-                        padding = 10.px
-                        backgroundColor = Color("#a5d8f5")
-                    }
+                if (user != null) {
+                    button {
+                        css {
+                            margin = 10.px
+                            padding = 10.px
+                            backgroundColor = Color("#a5d8f5")
+                        }
 
-                    onClick = {
-                        navigate("/play")
-                    }
+                        onClick = {
+                            navigate("/play")
+                        }
 
-                    +"Start Game"
-                }
-                button {
-                    css {
-                        margin = 10.px
-                        padding = 10.px
-                        backgroundColor = Color("#a5d8f5")
+                        +"Start Game"
                     }
+                } else {
+                    button {
+                        css {
+                            margin = 10.px
+                            padding = 10.px
+                            backgroundColor = Color("#a5d8f5")
+                        }
 
-                    onClick = {
-                        navigate("/profile")
+                        onClick = {
+                            navigate("/profile")
+                        }
+
+                        +"Sign In / Create Account"
                     }
-
-                    +"Create Account"
                 }
             }
         }
