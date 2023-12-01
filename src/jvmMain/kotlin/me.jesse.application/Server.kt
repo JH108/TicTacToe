@@ -12,10 +12,13 @@ import me.jesse.application.api.apiRoutes
 import me.jesse.application.plugins.configureMonitoring
 import me.jesse.application.plugins.configureSerialization
 import me.jesse.database.configureDatabases
+import me.jesse.tictactoe.UIRoute
 
-fun HTML.index() {
+fun HTML.index(
+    route: UIRoute
+) {
     head {
-        title("TicTacToe")
+        title("TicTacToe | ${route.title}")
     }
     body {
         main {
@@ -24,14 +27,16 @@ fun HTML.index() {
         script(src = "/static/TicTacToe.js") {}
         style(type = "text/css") {
             unsafe {
-                raw("""
+                raw(
+                    """
                     html, body {
                         height: 100%;
                         width: 100%;
                         margin: 0;
                         padding: 0;
                     }
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
         }
     }
@@ -49,8 +54,33 @@ private fun Application.startApplication() {
     configureMonitoring()
     apiRoutes()
     routing {
-        get("/") {
-            call.respondHtml(HttpStatusCode.OK, HTML::index)
+        get(UIRoute.Home.path) {
+            call.respondHtml(HttpStatusCode.OK) {
+                this.index(
+                    route = UIRoute.Home
+                )
+            }
+        }
+        get(UIRoute.Play.path) {
+            call.respondHtml(HttpStatusCode.OK) {
+                this.index(
+                    route = UIRoute.Play
+                )
+            }
+        }
+        get(UIRoute.Leaderboard.path) {
+            call.respondHtml(HttpStatusCode.OK) {
+                this.index(
+                    route = UIRoute.Leaderboard
+                )
+            }
+        }
+        get(UIRoute.Profile.path) {
+            call.respondHtml(HttpStatusCode.OK) {
+                this.index(
+                    route = UIRoute.Profile
+                )
+            }
         }
         static("/static") {
             resources()

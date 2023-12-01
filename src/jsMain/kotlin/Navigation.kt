@@ -3,6 +3,7 @@ import emotion.react.css
 import features.leaderboard.LeaderBoard
 import features.tictactoe.TicTacToe
 import features.user.Profile
+import me.jesse.tictactoe.UIRoute
 import react.VFC
 import react.create
 import react.dom.html.ReactHTML.div
@@ -11,6 +12,7 @@ import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
 import react.router.dom.Link
+import react.router.useLocation
 
 val HeaderLinks = VFC {
     div {
@@ -28,9 +30,9 @@ val HeaderLinks = VFC {
                 color = Color("#000000")
             }
 
-            to = "/"
+            to = UIRoute.Home.path
 
-            +"Home"
+            +UIRoute.Home.title
         }
 
         Link {
@@ -40,9 +42,9 @@ val HeaderLinks = VFC {
                 color = Color("#000000")
             }
 
-            to = "/leaderboard"
+            to = UIRoute.Leaderboard.path
 
-            +"Leaderboard"
+            +UIRoute.Leaderboard.title
         }
 
         Link {
@@ -52,9 +54,9 @@ val HeaderLinks = VFC {
                 color = Color("#000000")
             }
 
-            to = "/profile"
+            to = UIRoute.Profile.path
 
-            +"Profile"
+            +UIRoute.Profile.title
         }
 
         Link {
@@ -64,14 +66,15 @@ val HeaderLinks = VFC {
                 color = Color("#000000")
             }
 
-            to = "/play"
+            to = UIRoute.Play.path
 
-            +"Find Game"
+            +UIRoute.Play.title
         }
     }
 }
 
 val Header = VFC {
+    val location = useLocation()
     div {
         css {
             display = Display.flex
@@ -90,10 +93,18 @@ val Header = VFC {
                 color = Color("#000000")
             }
 
-            to = "/"
+            to = UIRoute.Home.path
 
             h2 {
-                +"TicTacToe"
+               val pathTitle = when (location.pathname) {
+                    UIRoute.Home.path -> "Home"
+                    UIRoute.Leaderboard.path -> "Leaderboard"
+                    UIRoute.Profile.path -> "Profile"
+                    UIRoute.Play.path -> "Play"
+                   else -> ""
+               }
+
+                +"TicTacToe - $pathTitle"
             }
         }
 
@@ -108,23 +119,19 @@ val Navigation = VFC {
 
             Routes {
                 Route {
-                    key = "Home"
-                    path = "/"
+                    path = UIRoute.Home.path
                     element = Home.create()
                 }
                 Route {
-                    key = "Leaderboard"
-                    path = "/leaderboard"
+                    path = UIRoute.Leaderboard.path
                     element = LeaderBoard.create()
                 }
                 Route {
-                    key = "Profile"
-                    path = "/profile"
+                    path = UIRoute.Profile.path
                     element = Profile.create()
                 }
                 Route {
-                    key = "Play"
-                    path = "/play"
+                    path = UIRoute.Play.path
                     element = TicTacToe.create()
                 }
             }
