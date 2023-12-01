@@ -3,6 +3,7 @@ package me.jesse.database
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuidFrom
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +94,7 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
     ): Flow<User?> {
         return databaseQueries.selectUserById(userId, ::mapDatabaseUserToModelUser)
             .asFlow()
-            .mapToOne(Dispatchers.Default)
+            .mapToOneOrNull(Dispatchers.Default)
     }
 
     /**
@@ -106,7 +107,7 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
     ): Flow<User?> {
         return databaseQueries.selectUserByUsername(forUsername, ::mapDatabaseUserToModelUser)
             .asFlow()
-            .mapToOne(Dispatchers.Default)
+            .mapToOneOrNull(Dispatchers.Default)
     }
 
     fun getTopFivePlayers(): List<Pair<User, UserStats>> {

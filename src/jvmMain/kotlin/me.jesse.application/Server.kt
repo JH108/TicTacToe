@@ -10,6 +10,7 @@ import io.ktor.server.routing.*
 import kotlinx.html.*
 import me.jesse.application.api.apiRoutes
 import me.jesse.application.plugins.configureMonitoring
+import me.jesse.application.plugins.configureResources
 import me.jesse.application.plugins.configureSerialization
 import me.jesse.database.configureDatabases
 import me.jesse.tictactoe.UIRoute
@@ -52,6 +53,7 @@ private fun Application.startApplication() {
     configureDatabases()
     configureSerialization()
     configureMonitoring()
+    configureResources()
     apiRoutes()
     routing {
         get(UIRoute.Home.path) {

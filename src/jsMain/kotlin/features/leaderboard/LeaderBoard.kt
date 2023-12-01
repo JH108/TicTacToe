@@ -8,6 +8,7 @@ import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
+import mainScope
 import me.jesse.models.User
 import me.jesse.models.UserStats
 import me.jesse.serializers.CommonSerializerModule
@@ -18,8 +19,6 @@ import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.p
 import react.useEffectOnce
 import react.useState
-
-val mainScope = MainScope()
 
 val LeaderBoard = FC<Props> {
     var topFivePlayers by useState<List<Pair<User, UserStats>>>(listOf())

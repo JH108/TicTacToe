@@ -4,5 +4,5 @@ import io.ktor.resources.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Resource(path = "/register")
-class RegisterUser
+@Resource(path = "/leaderboard")
+class Leaderboard ()

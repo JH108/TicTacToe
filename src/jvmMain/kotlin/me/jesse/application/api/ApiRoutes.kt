@@ -2,15 +2,16 @@ package me.jesse.application.api
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import me.jesse.application.resources.LoadGame
-import me.jesse.application.resources.RegisterUser
-import me.jesse.application.resources.SaveGame
-import me.jesse.application.resources.StartGame
+import me.jesse.application.resources.*
 import me.jesse.database.ticTacToeSdk
 import me.jesse.models.Game
 import me.jesse.models.GameStatus
@@ -27,7 +28,17 @@ import me.jesse.models.User
 fun Application.apiRoutes() {
     routing {
         route("/api") {
-            post<RegisterUser> { user ->
+            post("/register") {
+                val user = try {
+                    call.receive<User>()
+                } catch (e: Exception) {
+                    call.respond(
+                        status = HttpStatusCode.NotAcceptable,
+                        message = "The request body is missing or malformed."
+                    )
+                    return@post
+                }
+
                 val existingUser = withContext(Dispatchers.IO) {
                     application.ticTacToeSdk.database.getUserByUsername(
                         user.username
@@ -50,6 +61,7 @@ fun Application.apiRoutes() {
                 } catch (e: Exception) {
                     call.respond(status = HttpStatusCode.InternalServerError, message = e)
                 }
+
                 call.respond(newUser)
             }
             get("/profile?username={username}") {
@@ -115,7 +127,7 @@ fun Application.apiRoutes() {
             post<LoadGame> {
 
             }
-            get("/leaderboard") {
+            get<Leaderboard> {
                 val topFivePlayers = withContext(Dispatchers.IO) {
                     application.ticTacToeSdk.database.getTopFivePlayers()
                 }
