@@ -4,11 +4,14 @@ import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
-import react.*
+import me.jesse.tictactoe.UIRoute
+import react.FC
+import react.Props
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.h2
 import react.router.useNavigate
+import react.useContext
+import react.useState
 
 external interface ClientApplicationProps : Props {
     var configuration: ClientConfiguration
@@ -18,17 +21,8 @@ val mainScope = MainScope()
 
 val Home = FC<ClientApplicationProps> { props ->
     val navigate = useNavigate()
-    // load the initial data
     val user = useContext(UserContext)
-    var initialDataHasLoaded by useState(false)
-
-    useEffectOnce {
-        mainScope.launch {
-            prefillDatabase()
-
-            initialDataHasLoaded = true
-        }
-    }
+    var isLoading by useState(false)
 
     div {
         css {
@@ -37,59 +31,61 @@ val Home = FC<ClientApplicationProps> { props ->
             height = 100.vh
             width = 100.pct
         }
-
-        if (!initialDataHasLoaded) {
-            div {
-                css {
-                    display = Display.flex
-                    flexDirection = FlexDirection.row
-                    justifyContent = JustifyContent.center
-                    alignItems = AlignItems.center
-                    height = 100.vh
-                }
-
-                h2 {
-                    +"Loading the Initial Data..."
-                }
+        div {
+            css {
+                display = Display.flex
+                flexDirection = FlexDirection.row
+                justifyContent = JustifyContent.center
+                alignItems = AlignItems.center
+                height = 100.vh
             }
-        } else {
-            div {
+
+            button {
                 css {
-                    display = Display.flex
-                    flexDirection = FlexDirection.row
-                    justifyContent = JustifyContent.center
-                    alignItems = AlignItems.center
-                    height = 100.vh
+                    margin = 10.px
+                    padding = 10.px
+                    backgroundColor = Color("#a5d8f5")
                 }
 
-                if (user != null) {
-                    button {
-                        css {
-                            margin = 10.px
-                            padding = 10.px
-                            backgroundColor = Color("#a5d8f5")
-                        }
-
-                        onClick = {
-                            navigate("/play")
-                        }
-
-                        +"Start Game"
+                onClick = {
+                    mainScope.launch {
+                        isLoading = true
+                        prefillDatabase()
+                        isLoading = false
                     }
-                } else {
-                    button {
-                        css {
-                            margin = 10.px
-                            padding = 10.px
-                            backgroundColor = Color("#a5d8f5")
-                        }
+                }
 
-                        onClick = {
-                            navigate("/profile")
-                        }
+                if (isLoading) +"Loading..."
+                else +"Load Fake Data"
+            }
 
-                        +"Sign In / Create Account"
+            if (user != null) {
+                button {
+                    css {
+                        margin = 10.px
+                        padding = 10.px
+                        backgroundColor = Color("#a5d8f5")
                     }
+
+                    onClick = {
+                        navigate(UIRoute.Play.path)
+                    }
+
+                    +"Start Game"
+                }
+            } else {
+                button {
+                    css {
+                        margin = 10.px
+                        padding = 10.px
+                        backgroundColor = Color("#a5d8f5")
+                    }
+
+                    onClick = {
+                        navigate(UIRoute.Profile.path)
+                    }
+
+                    +"Sign In / Create Account"
                 }
             }
         }

@@ -22,8 +22,6 @@ val Card = FC<CardProps> { props ->
             justifyContent = JustifyContent.start
             backgroundColor = Color("#f5f5f5")
             borderRadius = 10.px
-            width = 300.px
-            height = 300.px
         }
 
         h4 {
