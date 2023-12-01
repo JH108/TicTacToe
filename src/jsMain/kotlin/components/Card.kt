@@ -20,7 +20,6 @@ val Card = FC<CardProps> { props ->
             display = Display.flex
             flexDirection = FlexDirection.column
             justifyContent = JustifyContent.start
-            alignItems = AlignItems.center
             backgroundColor = Color("#f5f5f5")
             borderRadius = 10.px
             width = 300.px
@@ -40,8 +39,9 @@ val Card = FC<CardProps> { props ->
         div {
             css {
                 display = Display.flex
-                flexDirection = FlexDirection.column
-                justifyContent = JustifyContent.center
+                flexDirection = FlexDirection.row
+                flexWrap = FlexWrap.wrap
+                justifyContent = JustifyContent.spaceEvenly
                 alignItems = AlignItems.center
                 alignSelf = AlignSelf.start
             }
