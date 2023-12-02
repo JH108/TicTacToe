@@ -118,4 +118,10 @@ SELECT * FROM Users;
 selectGameById:
 SELECT * FROM Games
 WHERE id = ?;
+
+clearAll {
+DELETE FROM Moves;
+DELETE FROM Games;
+DELETE FROM Users;
+}
 -- NOTE: I could do a lot more in SQL land but I'm going to do it in the application layer for now

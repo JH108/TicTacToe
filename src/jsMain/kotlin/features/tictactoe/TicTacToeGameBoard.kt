@@ -4,7 +4,6 @@ import ClientConfiguration
 import UserContext
 import csstype.*
 import emotion.react.css
-import features.user.isSuccessCode
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
@@ -12,17 +11,16 @@ import kotlinx.js.get
 import kotlinx.serialization.encodeToString
 import mainScope
 import me.jesse.models.Game
-import me.jesse.models.StartGameRequestBody
 import me.jesse.serializers.CommonSerializerModule
 import me.jesse.tictactoe.Board
-import me.jesse.tictactoe.Square
 import me.jesse.tictactoe.MoveSymbol
+import me.jesse.tictactoe.Square
 import org.w3c.fetch.Headers
 import org.w3c.fetch.RequestInit
 import react.*
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.p
+import react.dom.html.ReactHTML.h4
 import react.router.useParams
 
 /**
@@ -69,9 +67,13 @@ val TicTacToeGameBoard = FC<Props> { props ->
         }
 
         if (game?.playerToMove != currentUser) {
-            p {
+            h4 {
                 +"Waiting for other player to move..."
             }
+        }
+
+        h4 {
+            +"Game Status: ${game?.status}"
         }
 
         button {
@@ -96,11 +98,13 @@ val TicTacToeGameBoard = FC<Props> { props ->
                 if (game?.playerToMove == currentUser) {
 
                     game?.let { safeGame ->
-                        game = safeGame.play(index)
+                        val gameWithPlay = safeGame.play(index)
 
                         mainScope.launch {
-                            saveGame(safeGame)
+                            saveGame(gameWithPlay)
                         }
+
+                        game = gameWithPlay
                     }
                 }
             }

@@ -110,8 +110,13 @@ fun Application.apiRoutes() {
                     return@get
                 }
 
-                val games = withContext(Dispatchers.IO) {
-                    application.ticTacToeSdk.database.getGamesByPlayerId(userId).firstOrNull()
+                val games = try {
+                    withContext(Dispatchers.IO) {
+                        application.ticTacToeSdk.database.getGamesByPlayerId(userId).firstOrNull()
+                    }
+                } catch (e: Exception) {
+                    println(e)
+                    null
                 }
 
                 if (games == null) {
@@ -217,6 +222,13 @@ fun Application.apiRoutes() {
                 withContext(Dispatchers.IO) {
                     application.ticTacToeSdk.database.loadFakeData()
                 }
+                call.respond("ok")
+            }
+            get("/reset-database") {
+                withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.clearAll()
+                }
+
                 call.respond("ok")
             }
         }

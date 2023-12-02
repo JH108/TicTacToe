@@ -51,14 +51,23 @@ val UserProfile = FC<UserProfileProps> { props ->
         Card {
             title = "User Details"
 
-            p {
-                +"Username: ${props.userDetails.username}"
-            }
-            p {
-                +"First Name: ${props.userDetails.firstName}"
-            }
-            p {
-                +"Last Name: ${props.userDetails.lastName}"
+            div {
+                css {
+                    display = Display.flex
+                    flexDirection = FlexDirection.column
+                    justifyContent = JustifyContent.center
+                    alignItems = AlignItems.center
+                }
+
+                p {
+                    +"Username: ${props.userDetails.username}"
+                }
+                p {
+                    +"First Name: ${props.userDetails.firstName}"
+                }
+                p {
+                    +"Last Name: ${props.userDetails.lastName}"
+                }
             }
         }
 
@@ -102,11 +111,20 @@ val UserProfile = FC<UserProfileProps> { props ->
 
                     title = "Game ID: ${game.id} - ${game.status}"
 
-                    p {
-                        +"Player X: ${game.playerX.username}"
-                    }
-                    p {
-                        +"Player O: ${game.playerO.username}"
+                    div {
+                        css {
+                            display = Display.flex
+                            flexDirection = FlexDirection.column
+                            justifyContent = JustifyContent.center
+                            alignItems = AlignItems.center
+                        }
+
+                        p {
+                            +"Player X: ${game.playerX.username}"
+                        }
+                        p {
+                            +"Player O: ${game.playerO.username}"
+                        }
                     }
                 }
             }

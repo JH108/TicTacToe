@@ -18,6 +18,10 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
     private val database = TicTacToeDatabase(driver)
     private val databaseQueries = database.ticTacToeDatabaseQueries
 
+    fun clearAll() {
+        databaseQueries.clearAll()
+    }
+
     fun insertUser(
         user: User
     ) {
@@ -184,35 +188,6 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
     /**
-     * Get all games for a given player and game status.
-     * @param playerId The player to get games for.
-     * @param gameStatus The status of the games to get.
-     */
-    fun getGamesByPlayerIdAndGameStatus(
-        playerId: String,
-        gameStatus: GameStatus
-    ): Flow<List<Game>> {
-        return databaseQueries.selectGamesByPlayerIdAndStatus(
-            player_id = playerId,
-            status = gameStatus.toString()
-        ) { id, player_x_id, player_o_id, player_to_move_id, start_time, end_time, status ->
-            buildGame(
-                Games(
-                    id = id,
-                    player_x_id = player_x_id,
-                    player_o_id = player_o_id,
-                    player_to_move_id = player_to_move_id,
-                    status = status,
-                    start_time = start_time,
-                    end_time = end_time
-                )
-            )
-        }
-            .asFlow()
-            .mapToList(Dispatchers.Default)
-    }
-
-    /**
      * Get a game by its id.
      * @param gameId The id of the game to get.
      */
@@ -256,23 +231,25 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
     private fun buildGame(
         game: Games
     ): Game {
-        val (userX, userO) = getUsersForGame(game)
-        val moves = getMovesForGame(game)
+        return databaseQueries.transactionWithResult {
+            val (userX, userO) = getUsersForGame(game)
+            val moves = getMovesForGame(game)
 
-        // parse start time and end time
-        val startTime = LocalDateTime.parse(game.start_time)
-        val endTime = game.end_time?.let { LocalDateTime.parse(it) }
+            // parse start time and end time
+            val startTime = LocalDateTime.parse(game.start_time)
+            val endTime = game.end_time?.let { LocalDateTime.parse(it) }
 
-        return Game(
-            id = uuidFrom(game.id),
-            playerX = userX,
-            playerO = userO,
-            playerToMove = if (game.player_to_move_id == userX.id.toString()) userX else userO,
-            status = GameStatus.valueOf(game.status),
-            startTime = startTime,
-            endTime = endTime,
-            moves = moves
-        )
+            Game(
+                id = uuidFrom(game.id),
+                playerX = userX,
+                playerO = userO,
+                playerToMove = if (game.player_to_move_id == userX.id.toString()) userX else userO,
+                status = GameStatus.valueOf(game.status),
+                startTime = startTime,
+                endTime = endTime,
+                moves = moves
+            )
+        }
     }
 
     private fun getUsersForGame(

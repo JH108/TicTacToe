@@ -71,19 +71,31 @@ external interface UserStatProps : Props {
 val UserStatCard = FC<UserStatProps> { props ->
     Card {
         title = props.user.username
-        subtitle = "${props.stats.winPercent}%"
+        subtitle = "Win Percent: ${props.stats.winPercentString}"
 
-        p {
-            +"Wins: ${props.stats.totalWins}"
-        }
-        p {
-            +"Draws: ${props.stats.totalDraws}"
-        }
-        p {
-            +"Wins as X: ${props.stats.totalXWins}"
-        }
-        p {
-            +"Wins as O: ${props.stats.totalOWins}"
+        div {
+            css {
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                justifyContent = JustifyContent.center
+                alignItems = AlignItems.center
+            }
+
+            p {
+                +"Total Games: ${props.stats.totalGames}"
+            }
+            p {
+                +"Wins: ${props.stats.totalWins}"
+            }
+            p {
+                +"Draws: ${props.stats.totalDraws}"
+            }
+            p {
+                +"Wins as X: ${props.stats.totalXWins}"
+            }
+            p {
+                +"Wins as O: ${props.stats.totalOWins}"
+            }
         }
     }
 }
