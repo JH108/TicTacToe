@@ -1,5 +1,8 @@
 import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.serialization.encodeToString
 import me.jesse.models.User
+import me.jesse.serializers.CommonSerializerModule
 import react.*
 import react.dom.client.createRoot
 
@@ -29,11 +32,34 @@ fun main() {
 
 val UserContext = createContext<Pair<User?, (User?) -> Unit>?>(null)
 
+fun persistUserToLocalStorage(user: User?) {
+    if (user == null) {
+        window.localStorage.removeItem("user")
+        return
+    }
+    window.localStorage.setItem("user", CommonSerializerModule.json.encodeToString(user))
+}
+
+fun retrieveUserFromLocalStorage(): User? {
+    val user = window.localStorage.getItem("user") ?: return null
+
+    return CommonSerializerModule.json.decodeFromString(user)
+}
+
 val App = FC<Props> {
     val (user, setUser) = useState<User?>(null)
 
+    useEffectOnce {
+        val savedUser = retrieveUserFromLocalStorage()
+
+        if (savedUser != null) {
+            setUser(savedUser)
+        }
+    }
+
     UserContext.Provider(user to {
         setUser(it)
+        persistUserToLocalStorage(it)
     }) {
         child(Navigation.create())
     }
