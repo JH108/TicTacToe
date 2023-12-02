@@ -70,6 +70,13 @@ private fun Application.startApplication() {
                 )
             }
         }
+        get(UIRoute.FindMatch.path) {
+            call.respondHtml(HttpStatusCode.OK) {
+                this.index(
+                    route = UIRoute.FindMatch
+                )
+            }
+        }
         get(UIRoute.Leaderboard.path) {
             call.respondHtml(HttpStatusCode.OK) {
                 this.index(

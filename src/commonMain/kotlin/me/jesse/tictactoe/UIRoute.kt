@@ -16,6 +16,10 @@ sealed interface UIRoute {
         override val path = "/play"
         override val title = "Play"
     }
+    data object FindMatch : UIRoute {
+        override val path = "/find-match"
+        override val title = "Find Match"
+    }
     data object Leaderboard : UIRoute {
         override val path = "/leaderboard"
         override val title = "Leaderboard"

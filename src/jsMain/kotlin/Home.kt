@@ -68,7 +68,7 @@ val Home = FC<ClientApplicationProps> { props ->
                     }
 
                     onClick = {
-                        navigate(UIRoute.Play.path)
+                        navigate(UIRoute.FindMatch.path)
                     }
 
                     +"Start Game"

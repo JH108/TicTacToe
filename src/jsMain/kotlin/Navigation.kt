@@ -1,7 +1,8 @@
 import csstype.*
 import emotion.react.css
 import features.leaderboard.LeaderBoard
-import features.tictactoe.TicTacToe
+import features.tictactoe.FindMatch
+import features.tictactoe.TicTacToeGameBoard
 import features.user.Profile
 import me.jesse.tictactoe.UIRoute
 import react.VFC
@@ -9,6 +10,7 @@ import react.create
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h2
 import react.router.Route
+import react.router.RouteProps
 import react.router.Routes
 import react.router.dom.BrowserRouter
 import react.router.dom.Link
@@ -66,9 +68,9 @@ val HeaderLinks = VFC {
                 color = Color("#000000")
             }
 
-            to = UIRoute.Play.path
+            to = UIRoute.FindMatch.path
 
-            +UIRoute.Play.title
+            +UIRoute.FindMatch.title
         }
     }
 }
@@ -96,13 +98,14 @@ val Header = VFC {
             to = UIRoute.Home.path
 
             h2 {
-               val pathTitle = when (location.pathname) {
+                val pathTitle = when (location.pathname) {
                     UIRoute.Home.path -> "Home"
                     UIRoute.Leaderboard.path -> "Leaderboard"
                     UIRoute.Profile.path -> "Profile"
                     UIRoute.Play.path -> "Play"
-                   else -> ""
-               }
+                    UIRoute.FindMatch.path -> "Find Match"
+                    else -> ""
+                }
 
                 +"TicTacToe - $pathTitle"
             }
@@ -131,8 +134,12 @@ val Navigation = VFC {
                     element = Profile.create()
                 }
                 Route {
-                    path = UIRoute.Play.path
-                    element = TicTacToe.create()
+                    path = "${UIRoute.Play.path}/:gameId"
+                    element = TicTacToeGameBoard.create()
+                }
+                Route {
+                    path = UIRoute.FindMatch.path
+                    element = FindMatch.create()
                 }
             }
         }

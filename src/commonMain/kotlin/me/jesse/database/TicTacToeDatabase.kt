@@ -89,6 +89,12 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
+    fun getAllUsers(): Flow<List<User>> {
+        return databaseQueries.selectAllUsers(::mapDatabaseUserToModelUser)
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+    }
+
     fun getUser(
         userId: String
     ): Flow<User?> {
@@ -204,6 +210,30 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
         }
             .asFlow()
             .mapToList(Dispatchers.Default)
+    }
+
+    /**
+     * Get a game by its id.
+     * @param gameId The id of the game to get.
+     */
+    fun getGameById(
+        gameId: String
+    ): Flow<Game?> {
+        return databaseQueries.selectGameById(gameId) { id, player_x_id, player_o_id, player_to_move_id, start_time, end_time, status ->
+            buildGame(
+                Games(
+                    id = id,
+                    player_x_id = player_x_id,
+                    player_o_id = player_o_id,
+                    player_to_move_id = player_to_move_id,
+                    status = status,
+                    start_time = start_time,
+                    end_time = end_time
+                )
+            )
+        }
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.Default)
     }
 
     /**

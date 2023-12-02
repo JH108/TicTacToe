@@ -15,6 +15,7 @@ import me.jesse.application.resources.*
 import me.jesse.database.ticTacToeSdk
 import me.jesse.models.Game
 import me.jesse.models.GameStatus
+import me.jesse.models.StartGameRequestBody
 import me.jesse.models.User
 
 /**
@@ -64,7 +65,22 @@ fun Application.apiRoutes() {
 
                 call.respond(newUser)
             }
-            get("/profile?username={username}") {
+            get("/users") {
+                val users = withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.getAllUsers().firstOrNull()
+                }
+
+                if (users == null) {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = "No users were found."
+                    )
+                    return@get
+                }
+
+                call.respond(users)
+            }
+            get("/users/{username}") {
                 val username = call.parameters["username"]
 
                 if (username == null) {
@@ -86,7 +102,38 @@ fun Application.apiRoutes() {
 
                 call.respond(user)
             }
-            post<StartGame> { startGame ->
+            get("/users/{userId}/games") {
+                val userId = call.parameters["userId"]
+
+                if (userId == null) {
+                    call.respond(status = HttpStatusCode.NotAcceptable, message = "The userId parameter is missing.")
+                    return@get
+                }
+
+                val games = withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.getGamesByPlayerId(userId).firstOrNull()
+                }
+
+                if (games == null) {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = "No games were found for the user with the id $userId."
+                    )
+                    return@get
+                }
+
+                call.respond(games)
+            }
+            post("/games/start") {
+                val startGame = try {
+                    call.receive<StartGameRequestBody>()
+                } catch (e: Exception) {
+                    call.respond(
+                        status = HttpStatusCode.NotAcceptable,
+                        message = "The request body is missing or malformed."
+                    )
+                    return@post
+                }
                 val playerOne = startGame.playerOne
                 val playerTwo = startGame.playerTwo
 
@@ -98,15 +145,16 @@ fun Application.apiRoutes() {
                     ).firstOrNull()
                 }
 
-                if (existingGame != null) {
+                if (!existingGame.isNullOrEmpty()) {
                     call.respond(existingGame)
                     return@post
                 }
 
                 val firstPlayer = if (listOf(true, false).random()) playerOne else playerTwo
+
                 val newGame = Game(
-                    playerX = playerOne,
-                    playerO = playerTwo,
+                    playerX = firstPlayer,
+                    playerO = if (firstPlayer == playerOne) playerTwo else playerOne,
                     playerToMove = firstPlayer
                 )
 
@@ -120,12 +168,43 @@ fun Application.apiRoutes() {
 
                 call.respond(newGame)
             }
-            post<SaveGame> {
+            post("/games/save") {
+                val game = try {
+                    call.receive<Game>()
+                } catch (e: Exception) {
+                    call.respond(
+                        status = HttpStatusCode.NotAcceptable,
+                        message = "The request body is missing or malformed."
+                    )
+                    return@post
+                }
 
+                try {
+                    withContext(Dispatchers.IO) {
+                        application.ticTacToeSdk.database.updateGameStatus(game)
+                    }
+                } catch (e: Exception) {
+                    call.respond(status = HttpStatusCode.InternalServerError, message = e)
+                }
+
+                call.respond(game)
             }
-            // This one might be redundant since the start game is basically start or load
-            post<LoadGame> {
+            get<LoadGame> {
+                val gameId = it.gameId
 
+                val game = withContext(Dispatchers.IO) {
+                    application.ticTacToeSdk.database.getGameById(gameId).firstOrNull()
+                }
+
+                if (game == null) {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = "The game with the id $gameId was not found."
+                    )
+                    return@get
+                }
+
+                call.respond(game)
             }
             get<Leaderboard> {
                 val topFivePlayers = withContext(Dispatchers.IO) {

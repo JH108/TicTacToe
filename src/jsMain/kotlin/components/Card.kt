@@ -10,6 +10,7 @@ import react.dom.html.ReactHTML.h6
 external interface CardProps : PropsWithChildren {
     var title: String
     var subtitle: String?
+    var onClick: (() -> Unit)?
 }
 
 val Card = FC<CardProps> { props ->
@@ -22,6 +23,12 @@ val Card = FC<CardProps> { props ->
             justifyContent = JustifyContent.start
             backgroundColor = Color("#f5f5f5")
             borderRadius = 10.px
+        }
+
+        props.onClick?.let {
+            onClick = {
+                it()
+            }
         }
 
         h4 {

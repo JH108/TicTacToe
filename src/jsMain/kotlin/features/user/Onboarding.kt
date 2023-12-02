@@ -21,6 +21,7 @@ import react.Props
 import react.dom.html.ButtonType
 import react.dom.html.InputType
 import react.dom.html.ReactHTML.button
+import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.h4
 import react.dom.html.ReactHTML.input
@@ -38,7 +39,6 @@ data class OnboardingState(
 )
 
 val Onboarding = FC<Props> {
-    var userState by useState(OnboardingState("", "", ""))
     val userContext = useContext(UserContext)
     val navigate = useNavigate()
     var error by useState<String?>(null)
@@ -70,108 +70,213 @@ val Onboarding = FC<Props> {
             }
         }
 
-        form {
+        div {
             css {
-                marginTop = 25.px
-                padding = 10.px
                 display = Display.flex
-                flexDirection = FlexDirection.column
+                flexDirection = FlexDirection.row
                 justifyContent = JustifyContent.center
                 alignItems = AlignItems.center
-                height = 100.pct
-                backgroundColor = Color("#f5f5f5")
-                borderRadius = 10.px
             }
 
-            onSubmit = { formEvent ->
-                formEvent.preventDefault()
+            OnboardingForm {
+                onSubmit = { onboardingState ->
+                    isLoading = true
 
-                isLoading = true
+                    mainScope.launch {
+                        val response = createUser(onboardingState)
 
-                mainScope.launch {
-                    val response = createUser(userState)
+                        if (response.status.isSuccessCode()) {
+                            response.user?.let {
+                                userContext?.second?.invoke(it)
+                            }
+                            navigate(UIRoute.Profile.path)
+                        } else {
+                            error = response.error
+                        }
+                    }
 
-                    if (response.status.isSuccessCode()) {
-                        response.user?.let {
+                    isLoading = false
+                }
+                this.isLoading = isLoading
+            }
+
+            SignInForm {
+                onSubmit = { username ->
+                    isLoading = true
+
+                    mainScope.launch {
+                        val user = fetchUserByUsername(username)
+
+                        user?.let {
                             userContext?.second?.invoke(it)
                         }
                         navigate(UIRoute.Profile.path)
-                    } else {
-                        error = response.error
                     }
-                }
 
-                isLoading = false
+                    isLoading = false
+                }
+                this.isLoading = isLoading
+            }
+        }
+    }
+}
+
+external interface OnboardingFormProps : Props {
+    var onSubmit: (OnboardingState) -> Unit
+    var isLoading: Boolean
+}
+
+val OnboardingForm = FC<OnboardingFormProps> { props ->
+    var userState by useState(OnboardingState("", "", ""))
+
+    form {
+        css {
+            margin = 25.px
+            padding = 10.px
+            display = Display.flex
+            flexDirection = FlexDirection.column
+            justifyContent = JustifyContent.center
+            alignItems = AlignItems.center
+            backgroundColor = Color("#f5f5f5")
+            borderRadius = 10.px
+        }
+
+        onSubmit = { formEvent ->
+            formEvent.preventDefault()
+
+            props.onSubmit(userState)
+        }
+
+        h4 {
+            +"Create a New User"
+        }
+
+        input {
+            css {
+                margin = 10.px
+                padding = 10.px
             }
 
-            h4 {
-                +"Create a New User"
+            type = InputType.text
+            title = "Username"
+            placeholder = "Enter a username"
+            name = "username"
+            value = userState.username
+            onChange = { event ->
+                val target = event.target
+
+                userState = userState.copy(username = target.value)
+            }
+        }
+        input {
+            css {
+                margin = 10.px
+                padding = 10.px
             }
 
-            input {
-                css {
-                    margin = 10.px
-                    padding = 10.px
-                }
+            type = InputType.text
+            title = "First Name"
+            placeholder = "Enter your first name"
+            name = "firstName"
+            value = userState.firstName
+            onChange = { event ->
+                val target = event.target
 
-                type = InputType.text
-                title = "Username"
-                placeholder = "Enter a username"
-                name = "username"
-                value = userState.username
-                onChange = { event ->
-                    val target = event.target
-
-                    userState = userState.copy(username = target.value)
-                }
+                userState = userState.copy(firstName = target.value)
             }
-            input {
-                css {
-                    margin = 10.px
-                    padding = 10.px
-                }
-
-                type = InputType.text
-                title = "First Name"
-                placeholder = "Enter your first name"
-                name = "firstName"
-                value = userState.firstName
-                onChange = { event ->
-                    val target = event.target
-
-                    userState = userState.copy(firstName = target.value)
-                }
-            }
-            input {
-                css {
-                    margin = 10.px
-                    padding = 10.px
-                }
-
-                type = InputType.text
-                title = "Last Name"
-                placeholder = "Enter your last name"
-                name = "lastName"
-                value = userState.lastName
-                onChange = { event ->
-                    val target = event.target
-
-                    userState = userState.copy(lastName = target.value)
-                }
+        }
+        input {
+            css {
+                margin = 10.px
+                padding = 10.px
             }
 
-            button {
-                css {
-                    margin = 10.px
-                    padding = 10.px
-                    backgroundColor = Color("#a5f5a5")
-                }
+            type = InputType.text
+            title = "Last Name"
+            placeholder = "Enter your last name"
+            name = "lastName"
+            value = userState.lastName
+            onChange = { event ->
+                val target = event.target
 
-                type = ButtonType.submit
-                disabled = isLoading
-
-                +"Create User"
+                userState = userState.copy(lastName = target.value)
             }
+        }
+
+        button {
+            css {
+                margin = 10.px
+                padding = 10.px
+                backgroundColor = Color("#a5f5a5")
+            }
+
+            type = ButtonType.submit
+            disabled = props.isLoading
+
+            +"Create User"
+        }
+    }
+}
+
+external interface SignInFormProps : Props {
+    var onSubmit: (String) -> Unit
+    var isLoading: Boolean
+}
+
+val SignInForm = FC<SignInFormProps> { props ->
+    var username by useState("")
+
+    form {
+        css {
+            margin = 25.px
+            padding = 10.px
+            display = Display.flex
+            flexDirection = FlexDirection.column
+            justifyContent = JustifyContent.center
+            alignItems = AlignItems.center
+            backgroundColor = Color("#f5f5f5")
+            borderRadius = 10.px
+        }
+
+        onSubmit = { formEvent ->
+            formEvent.preventDefault()
+
+            props.onSubmit(username)
+        }
+
+        h4 {
+            +"Create a New User"
+        }
+
+        input {
+            css {
+                margin = 10.px
+                padding = 10.px
+            }
+
+            type = InputType.text
+            title = "Username"
+            placeholder = "Enter a username"
+            name = "username"
+            value = username
+            onChange = { event ->
+                val target = event.target
+
+                username = target.value
+            }
+        }
+
+        button {
+            css {
+                margin = 10.px
+                padding = 10.px
+                backgroundColor = Color("#a5f5a5")
+            }
+
+            type = ButtonType.submit
+            disabled = props.isLoading
+
+            +"Sign In"
         }
     }
 }
@@ -217,6 +322,29 @@ suspend fun createUser(user: OnboardingState): CreateUserResponse {
                 body
             )
         }
+    }
+}
+
+suspend fun fetchUserByUsername(username: String): User? {
+    val response = window.fetch(
+        Request(
+            input = ClientConfiguration.apiUrl + "/users/$username",
+            init = RequestInit(
+                method = "GET",
+                headers = Headers().apply {
+                    set("Content-Type", "application/json")
+                },
+            )
+        )
+    ).await()
+
+    return when (response.status.toInt()) {
+        200 -> {
+            val body = response.text().await()
+            CommonSerializerModule.json.decodeFromString<User>(body)
+        }
+
+        else -> null
     }
 }
 

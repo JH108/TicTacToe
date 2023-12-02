@@ -112,4 +112,10 @@ ORDER BY (total_x_wins + total_o_wins) / total_games DESC
 LIMIT 5;
 }
 
+selectAllUsers:
+SELECT * FROM Users;
+
+selectGameById:
+SELECT * FROM Games
+WHERE id = ?;
 -- NOTE: I could do a lot more in SQL land but I'm going to do it in the application layer for now
