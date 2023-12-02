@@ -86,3 +86,7 @@ If you haven't installed Java but want the experience then I recommend using [SD
 ```shell
 sdk install java 17.0.0-zulu
 ```
+
+## Demo
+
+![Demo](./demo.mov)
