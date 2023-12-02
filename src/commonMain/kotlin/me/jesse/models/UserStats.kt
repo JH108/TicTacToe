@@ -14,6 +14,6 @@ data class UserStats(
     val totalDraws: Long?
 ) {
     val totalWins = (totalXWins ?: 0) + (totalOWins ?: 0)
-    val winPercent = if (totalGames > 0) totalWins.toDouble() / totalGames.toDouble() else 0.0
+    private val winPercent = if (totalGames > 0) totalWins.toDouble() / totalGames.toDouble() else 0.0
     val winPercentString = "${(winPercent * 100).toInt()}%"
 }
