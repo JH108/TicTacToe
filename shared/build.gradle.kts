@@ -9,10 +9,10 @@ plugins {
 group = "me.jessehill"
 version = "1.2-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
-}
+//repositories {
+//    mavenCentral()
+//    maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
+//}
 
 kotlin {
     androidTarget {
@@ -66,7 +66,7 @@ kotlin {
         }
 
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
         }
 
         jvmMain.dependencies {
@@ -98,8 +98,12 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
         }
 
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+        iosMain.dependencies {
+            implementation("app.cash.sqldelight:native-driver:2.0.1")
+        }
+
+        sourceSets.androidMain.dependencies {
+            implementation("app.cash.sqldelight:android-driver:2.0.1")
         }
     }
 }
@@ -107,14 +111,14 @@ kotlin {
 //application {
 //    mainClass.set("me.jessehill.application.ServerKt")
 //}
-//
-//sqldelight {
-//    databases {
-//        create("TicTacToeDatabase") {
-//            packageName.set("me.jessehill.database")
-//        }
-//    }
-//}
+
+sqldelight {
+    databases {
+        create("TicTacToeDatabase") {
+            packageName.set("me.jessehill.database")
+        }
+    }
+}
 
 //tasks.named<Copy>("jvmProcessResources") {
 //    val jsBrowserDistribution = tasks.named("jsBrowserDistribution")
