@@ -3,16 +3,10 @@ plugins {
     alias(libs.plugins.androidLibrary)
     kotlin("plugin.serialization") version "1.9.20"
     id("app.cash.sqldelight") version "2.0.0"
-//    application
 }
 
 group = "me.jessehill"
 version = "1.2-SNAPSHOT"
-
-//repositories {
-//    mavenCentral()
-//    maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
-//}
 
 kotlin {
     androidTarget {
@@ -36,7 +30,7 @@ kotlin {
 
     jvm {
         jvmToolchain(17)
-//        withJava()
+
         testRuns.named("test") {
             executionTask.configure {
                 useJUnitPlatform()
@@ -107,10 +101,6 @@ kotlin {
         }
     }
 }
-
-//application {
-//    mainClass.set("me.jessehill.application.ServerKt")
-//}
 
 sqldelight {
     databases {

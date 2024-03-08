@@ -1,18 +1,22 @@
 package me.jessehill.application
 
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.Netty
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.*
 import kotlinx.html.*
+import me.jessehill.Greeting
 import me.jessehill.application.api.apiRoutes
 import me.jessehill.application.plugins.configureMonitoring
 import me.jessehill.application.plugins.configureResources
 import me.jessehill.application.plugins.configureSerialization
 import me.jessehill.database.configureDatabases
+import me.jessehill.getPlatform
 import me.jessehill.tictactoe.UIRoute
 
 fun HTML.index(
@@ -56,6 +60,11 @@ private fun Application.startApplication() {
     configureResources()
     apiRoutes()
     routing {
+        get("/platform") {
+            val platform = Greeting()
+
+            call.respondText(platform.greet(), ContentType.Text.Plain)
+        }
         get(UIRoute.Home.path) {
             call.respondHtml(HttpStatusCode.OK) {
                 this.index(
