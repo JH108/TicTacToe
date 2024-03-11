@@ -29,7 +29,7 @@ fun HTML.index(
         main {
             id = "root"
         }
-        script(src = "/static/TicTacToe.js") {}
+        script(src = "/static/shared.js") {}
         style(type = "text/css") {
             unsafe {
                 raw(
@@ -100,8 +100,6 @@ private fun Application.startApplication() {
                 )
             }
         }
-        static("/static") {
-            resources()
-        }
+        staticResources("/static", null)
     }
 }
