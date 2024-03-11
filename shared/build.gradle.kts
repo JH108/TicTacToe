@@ -110,15 +110,10 @@ sqldelight {
     }
 }
 
-//tasks.named<Copy>("jvmProcessResources") {
-//    val jsBrowserDistribution = tasks.named("jsBrowserDistribution")
-//    from(jsBrowserDistribution)
-//}
-//
-//tasks.named<JavaExec>("run") {
-//    dependsOn(tasks.named<Jar>("jvmJar"))
-//    classpath(tasks.named<Jar>("jvmJar"))
-//}
+tasks.named<Copy>("jvmProcessResources") {
+    val jsBrowserDistribution = tasks.named("jsBrowserDistribution")
+    from(jsBrowserDistribution)
+}
 
 android {
     namespace = "me.jessehill"
