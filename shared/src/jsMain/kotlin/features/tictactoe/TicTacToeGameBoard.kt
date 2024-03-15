@@ -1,8 +1,19 @@
 package features.tictactoe
 
-import ClientConfiguration
 import UserContext
-import csstype.*
+import csstype.AlignItems
+import csstype.Auto
+import csstype.Border
+import csstype.Color
+import csstype.Display
+import csstype.FlexDirection
+import csstype.FlexWrap
+import csstype.JustifyContent
+import csstype.LineStyle
+import csstype.Margin
+import csstype.px
+import csstype.rgb
+import csstype.vh
 import emotion.react.css
 import kotlinx.browser.window
 import kotlinx.coroutines.await
@@ -11,17 +22,24 @@ import kotlinx.js.get
 import kotlinx.serialization.encodeToString
 import mainScope
 import me.jessehill.models.Game
+import me.jessehill.network.ClientConfiguration
 import me.jessehill.serializers.CommonSerializerModule
 import me.jessehill.tictactoe.Board
 import me.jessehill.tictactoe.MoveSymbol
 import me.jessehill.tictactoe.Square
 import org.w3c.fetch.Headers
 import org.w3c.fetch.RequestInit
-import react.*
+import react.FC
+import react.Props
+import react.create
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h4
 import react.router.useParams
+import react.useContext
+import react.useEffect
+import react.useEffectOnce
+import react.useState
 
 /**
  * This route should only be navigated to after a game has been created and an id has been returned from the server.

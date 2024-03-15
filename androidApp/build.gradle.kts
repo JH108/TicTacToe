@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -44,5 +45,9 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
+//    implementation(libs.appyx.material3)
+//    implementation(libs.appyx.navigation)
+//    implementation(libs.appyx.backstack)
+//    implementation(libs.appyx.interactions)
     debugImplementation(libs.compose.ui.tooling)
 }

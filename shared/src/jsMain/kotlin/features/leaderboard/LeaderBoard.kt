@@ -1,6 +1,5 @@
 package features.leaderboard
 
-import ClientConfiguration
 import components.Card
 import csstype.*
 import emotion.react.css
@@ -10,6 +9,7 @@ import kotlinx.coroutines.launch
 import mainScope
 import me.jessehill.models.User
 import me.jessehill.models.UserStats
+import me.jessehill.network.ClientConfiguration
 import me.jessehill.serializers.CommonSerializerModule
 import react.FC
 import react.Props

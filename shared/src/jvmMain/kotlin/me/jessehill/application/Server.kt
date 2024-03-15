@@ -16,7 +16,6 @@ import me.jessehill.application.plugins.configureMonitoring
 import me.jessehill.application.plugins.configureResources
 import me.jessehill.application.plugins.configureSerialization
 import me.jessehill.database.configureDatabases
-import me.jessehill.getPlatform
 import me.jessehill.tictactoe.UIRoute
 
 fun HTML.index(

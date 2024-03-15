@@ -1,6 +1,7 @@
 import csstype.*
 import emotion.react.css
 import kotlinx.coroutines.MainScope
+import me.jessehill.network.ClientConfiguration
 import me.jessehill.tictactoe.UIRoute
 import react.FC
 import react.Props
