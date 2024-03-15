@@ -1,8 +1,13 @@
 package features.user
 
-import ClientConfiguration
 import UserContext
-import csstype.*
+import csstype.AlignItems
+import csstype.Color
+import csstype.Display
+import csstype.FlexDirection
+import csstype.JustifyContent
+import csstype.pct
+import csstype.px
 import emotion.react.css
 import kotlinx.browser.window
 import kotlinx.coroutines.await
@@ -11,6 +16,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import mainScope
 import me.jessehill.models.User
+import me.jessehill.network.ClientConfiguration
 import me.jessehill.serializers.CommonSerializerModule
 import me.jessehill.tictactoe.UIRoute
 import org.w3c.fetch.Headers

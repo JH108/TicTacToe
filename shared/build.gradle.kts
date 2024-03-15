@@ -57,23 +57,31 @@ kotlin {
             implementation("com.benasher44:uuid:0.8.2")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.serialization)
+            implementation(libs.ktor.client.content.negotiation)
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
 
+        androidMain.dependencies {
+            implementation("app.cash.sqldelight:android-driver:2.0.1")
+            implementation(libs.ktor.android.client)
+        }
+
         jvmMain.dependencies {
             implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
-            implementation("io.ktor:ktor-server-core-jvm:2.3.2")
-            implementation("io.ktor:ktor-server-resources:2.3.2")
-            implementation("io.ktor:ktor-server-call-logging-jvm:2.3.2")
-            implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
-            implementation("io.ktor:ktor-server-content-negotiation-jvm:2.3.2")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
-            implementation("io.ktor:ktor-server-netty:2.3.2")
-            implementation("io.ktor:ktor-server-html-builder-jvm:2.3.2")
-            implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")
+            implementation(libs.ktor.server.core.jvm)
+            implementation(libs.ktor.server.resources)
+            implementation(libs.ktor.server.call.logging.jvm)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.server.content.negotiation.jvm)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.server.netty)
+            implementation(libs.ktor.server.html.builder.jvm)
+            implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.1")
         }
 
         jsMain.dependencies {
@@ -94,10 +102,7 @@ kotlin {
 
         iosMain.dependencies {
             implementation("app.cash.sqldelight:native-driver:2.0.1")
-        }
-
-        sourceSets.androidMain.dependencies {
-            implementation("app.cash.sqldelight:android-driver:2.0.1")
+            implementation(libs.ktor.ios.client)
         }
     }
 }

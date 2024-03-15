@@ -16,21 +16,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun MyApplicationTheme(
+fun TicTacToeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) {
         darkColorScheme(
-            primary = Color(0xFFBB86FC),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+            primary = Color(0xFFA5D8F5),
+            secondary = Color(0xFF4285F4),
+            tertiary = Color(0xFF87CEFF),
+            surface = Color(0xFFFFFFFF),
+            onSurface = Color(0xFF000000),
+            background = Color(0xFFF2F2F2)
         )
     } else {
         lightColorScheme(
-            primary = Color(0xFF6200EE),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+            primary = Color(0xFFA5D8F5),
+            secondary = Color(0xFF4285F4),
+            tertiary = Color(0xFF87CEFF),
+            surface = Color(0xFFFFFFFF),
+            onSurface = Color(0xFF000000),
+            background = Color(0xFFF2F2F2)
         )
     }
     val typography = Typography(

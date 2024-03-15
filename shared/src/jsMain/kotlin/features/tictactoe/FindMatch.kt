@@ -1,9 +1,12 @@
 package features.tictactoe
 
-import ClientConfiguration
 import UserContext
 import components.Card
-import csstype.*
+import csstype.AlignItems
+import csstype.Display
+import csstype.FlexDirection
+import csstype.JustifyContent
+import csstype.pct
 import emotion.react.css
 import kotlinx.browser.window
 import kotlinx.coroutines.await
@@ -13,14 +16,19 @@ import mainScope
 import me.jessehill.models.Game
 import me.jessehill.models.StartGameRequestBody
 import me.jessehill.models.User
+import me.jessehill.network.ClientConfiguration
 import me.jessehill.serializers.CommonSerializerModule
 import me.jessehill.tictactoe.UIRoute
 import org.w3c.fetch.Headers
 import org.w3c.fetch.RequestInit
-import react.*
+import react.FC
+import react.Props
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.p
 import react.router.useNavigate
+import react.useContext
+import react.useEffectOnce
+import react.useState
 
 /**
  * This is a crud system for finding a match.

@@ -1,9 +1,14 @@
 package features.user
 
-import ClientConfiguration
 import UserContext
 import components.Card
-import csstype.*
+import csstype.AlignItems
+import csstype.Color
+import csstype.Display
+import csstype.FlexDirection
+import csstype.JustifyContent
+import csstype.pct
+import csstype.px
 import emotion.react.css
 import kotlinx.browser.window
 import kotlinx.coroutines.await
@@ -11,16 +16,22 @@ import kotlinx.coroutines.launch
 import mainScope
 import me.jessehill.models.Game
 import me.jessehill.models.User
+import me.jessehill.network.ClientConfiguration
 import me.jessehill.serializers.CommonSerializerModule
 import me.jessehill.tictactoe.UIRoute
 import org.w3c.fetch.Headers
 import org.w3c.fetch.RequestInit
-import react.*
+import react.FC
+import react.Props
+import react.create
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.p
 import react.dom.html.ReactHTML.section
 import react.router.useNavigate
+import react.useContext
+import react.useEffectOnce
+import react.useState
 
 external interface ProfileProps : Props
 
