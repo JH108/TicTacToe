@@ -2,6 +2,7 @@ package me.jessehill.android
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
@@ -57,6 +58,14 @@ class MainActivity : ComponentActivity() {
             }
             val currentRoute by remember(backstack) {
                 derivedStateOf { backstack.last() }
+            }
+
+            BackHandler {
+                if (backstack.size > 1) {
+                    backstack = backstack.dropLast(1)
+                } else {
+                    finish()
+                }
             }
 
             TicTacToeTheme {
