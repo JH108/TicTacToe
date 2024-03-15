@@ -35,8 +35,6 @@ import me.jessehill.network.TicTacToeApi
 import me.jessehill.tictactoe.UIRoute
 
 class MainActivity : ComponentActivity() {
-    //    private val databaseDriver by lazy { DatabaseDriverFactory(this) }
-//    private val ticTacToeSdk by lazy { TicTacToeSdk(databaseDriver) }
     private val ticTacToeApi by lazy { TicTacToeApi() }
     private val ticTacToeViewModel by viewModels<TicTacToeViewModel> {
         viewModelFactory {
@@ -90,9 +88,6 @@ class MainActivity : ComponentActivity() {
                                 is UIRoute.Profile -> Profile()
                                 is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
                                 is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state)
-                                null -> {
-                                    /*noop*/
-                                }
                             }
                         }
                         BottomAppBar(
