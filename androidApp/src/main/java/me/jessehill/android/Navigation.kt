@@ -2,12 +2,10 @@ package me.jessehill.android
 
 import android.util.Log
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
@@ -17,56 +15,16 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import me.jessehill.android.ui.GameBoard
 import me.jessehill.android.ui.Home
 import me.jessehill.android.ui.Leaderboard
 import me.jessehill.android.ui.Matchmaking
 import me.jessehill.android.ui.Profile
 import me.jessehill.tictactoe.UIRoute
-
-class Navigation(initialBackStack: List<UIRoute> = emptyList()) {
-    var backStack = mutableStateOf(initialBackStack)
-
-    fun push(route: UIRoute) {
-        Log.v("Navigation", "Pushing route: $route")
-        backStack.value = backStack.value + route
-    }
-
-    fun pop() {
-        if (backStack.value.size > 1) {
-            backStack.value = backStack.value.dropLast(1)
-        }
-    }
-
-    @Composable
-    fun ContentHandler(
-        state: TicTacToeState,
-        route: UIRoute?
-    ) {
-        Crossfade(targetState = route, label = "navigation-container") {
-            when (it) {
-                is UIRoute.Home -> Home()
-                is UIRoute.FindMatch -> Matchmaking()
-                is UIRoute.Profile -> Profile()
-                is UIRoute.Leaderboard -> Leaderboard(state = state)
-                is UIRoute.Play -> GameBoard(state = state)
-                null -> {
-                    /*noop*/
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun BottomNavigation(
