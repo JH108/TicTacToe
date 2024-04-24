@@ -12,6 +12,7 @@ import io.ktor.server.routing.*
 import kotlinx.html.*
 import me.jessehill.Greeting
 import me.jessehill.application.api.apiRoutes
+import me.jessehill.application.clientroutes.clientRoutes
 import me.jessehill.application.plugins.configureMonitoring
 import me.jessehill.application.plugins.configureResources
 import me.jessehill.application.plugins.configureSerialization
@@ -58,47 +59,13 @@ private fun Application.startApplication() {
     configureMonitoring()
     configureResources()
     apiRoutes()
+    clientRoutes()
+
     routing {
         get("/platform") {
             val platform = Greeting()
 
             call.respondText(platform.greet(), ContentType.Text.Plain)
         }
-        get(UIRoute.Home.path) {
-            call.respondHtml(HttpStatusCode.OK) {
-                this.index(
-                    route = UIRoute.Home
-                )
-            }
-        }
-        get(UIRoute.Play.path) {
-            call.respondHtml(HttpStatusCode.OK) {
-                this.index(
-                    route = UIRoute.Play
-                )
-            }
-        }
-        get(UIRoute.FindMatch.path) {
-            call.respondHtml(HttpStatusCode.OK) {
-                this.index(
-                    route = UIRoute.FindMatch
-                )
-            }
-        }
-        get(UIRoute.Leaderboard.path) {
-            call.respondHtml(HttpStatusCode.OK) {
-                this.index(
-                    route = UIRoute.Leaderboard
-                )
-            }
-        }
-        get(UIRoute.Profile.path) {
-            call.respondHtml(HttpStatusCode.OK) {
-                this.index(
-                    route = UIRoute.Profile
-                )
-            }
-        }
-        staticResources("/static", null)
     }
 }
