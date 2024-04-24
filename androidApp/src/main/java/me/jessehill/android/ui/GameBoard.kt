@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +29,7 @@ import me.jessehill.android.TicTacToeTheme
 import me.jessehill.android.ui.components.CenteredColumn
 import me.jessehill.tictactoe.Board
 import me.jessehill.tictactoe.MoveSymbol
+import me.jessehill.tictactoe.Square
 import me.jessehill.tictactoe.setSquares
 
 @Composable
@@ -39,7 +44,9 @@ fun GameBoard(state: TicTacToeState) {
         }
     })
 
-    CenteredColumn {
+    CenteredColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
         Column {
             Text(text = "Game Board")
         }
@@ -60,13 +67,12 @@ fun GameBoardUI(
     board: Board,
     onClick: (Int) -> Unit
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
+    CenteredColumn(modifier = modifier.padding(16.dp)) {
         board.squares.windowed(3, 3).forEachIndexed { rowIndex, row ->
             Row {
                 row.forEachIndexed { index, cell ->
                     BoardCell(
                         value = cell.value,
-                        test = (rowIndex * 3 + index).toString(),
                         onClick = { onClick(rowIndex * 3 + index) }
                     )
                 }
@@ -82,15 +88,23 @@ fun BoardCell(
     test: String? = null,
     onClick: () -> Unit
 ) {
+    // TODO: Figure out how to make these cell sizes dynamic based on the size of the device
     CenteredColumn(
         modifier = modifier
+            .sizeIn(
+                minWidth = 64.dp,
+                minHeight = 64.dp,
+                maxWidth = 128.dp,
+                maxHeight = 128.dp
+            )
+            .padding(4.dp)
             .border(1.dp, MaterialTheme.colorScheme.onSurface)
-            .padding(8.dp)
             .clickable(
                 enabled = value == MoveSymbol.EMPTY,
             ) {
                 onClick()
             }
+            .padding(8.dp)
     ) {
         if (value != MoveSymbol.EMPTY)
             Text(text = value.toString())
@@ -104,7 +118,9 @@ fun BoardCell(
 fun PreviewBoardCellX() {
     TicTacToeTheme {
         Surface {
-            BoardCell(value = MoveSymbol.X, onClick = {})
+            Row {
+                BoardCell(value = MoveSymbol.X, onClick = {})
+            }
         }
     }
 }
@@ -114,7 +130,9 @@ fun PreviewBoardCellX() {
 fun PreviewBoardCellO() {
     TicTacToeTheme {
         Surface {
-            BoardCell(value = MoveSymbol.O, onClick = {})
+            Row {
+                BoardCell(value = MoveSymbol.O, onClick = {})
+            }
         }
     }
 }
@@ -124,7 +142,9 @@ fun PreviewBoardCellO() {
 fun PreviewBoardCellEmpty() {
     TicTacToeTheme {
         Surface {
-            BoardCell(value = MoveSymbol.EMPTY, onClick = {})
+            Row {
+                BoardCell(value = MoveSymbol.EMPTY, onClick = {})
+            }
         }
     }
 }
@@ -136,6 +156,21 @@ fun PreviewEmptyGameBoard() {
         Surface {
             GameBoardUI(
                 board = Board(),
+                onClick = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewFullGameBoard() {
+    TicTacToeTheme {
+        Surface {
+            GameBoardUI(
+                board = Board(
+                    squares = List(9) { Square(MoveSymbol.X) }
+                ),
                 onClick = {}
             )
         }
