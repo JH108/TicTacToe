@@ -12,17 +12,14 @@ import me.jessehill.models.Game
 import me.jessehill.models.StartGameRequestBody
 import me.jessehill.models.User
 import me.jessehill.models.UserStats
+import me.jessehill.serializers.CommonSerializerModule
 
 // TODO: Have this write to the database potentially
 class TicTacToeApi {
     private val httpClient = HttpClient {
         install(ContentNegotiation) {
             json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                }
+                CommonSerializerModule.json
             )
         }
     }

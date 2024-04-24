@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +40,7 @@ fun BottomNavigation(
                 MaterialTheme.colorScheme.onPrimary
             },
             modifier = Modifier
-                .clickable { onNavigate(UIRoute.Home) }
+                .clickable(enabled = (route is UIRoute.Home).not()) { onNavigate(UIRoute.Home) }
         )
         // Leaderboard
         Icon(
@@ -51,7 +52,7 @@ fun BottomNavigation(
                 MaterialTheme.colorScheme.onPrimary
             },
             modifier = Modifier
-                .clickable { onNavigate(UIRoute.Leaderboard) }
+                .clickable(enabled = (route is UIRoute.Leaderboard).not()) { onNavigate(UIRoute.Leaderboard) }
         )
         // FindMatch
         Icon(
@@ -63,7 +64,7 @@ fun BottomNavigation(
                 MaterialTheme.colorScheme.onPrimary
             },
             modifier = Modifier
-                .clickable { onNavigate(UIRoute.FindMatch) }
+                .clickable(enabled = (route is UIRoute.FindMatch).not()) { onNavigate(UIRoute.FindMatch) }
         )
         // Profile
         Icon(
@@ -75,7 +76,19 @@ fun BottomNavigation(
                 MaterialTheme.colorScheme.onPrimary
             },
             modifier = Modifier
-                .clickable { onNavigate(UIRoute.Profile) }
+                .clickable(enabled = (route is UIRoute.Profile).not()) { onNavigate(UIRoute.Profile) }
+        )
+        // Play
+        Icon(
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = "Play",
+            tint = if (route is UIRoute.Play) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            },
+            modifier = Modifier
+                .clickable(enabled = (route is UIRoute.Play).not()) { onNavigate(UIRoute.Play) }
         )
     }
 }
