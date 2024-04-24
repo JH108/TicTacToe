@@ -1,13 +1,10 @@
 package me.jessehill.application
 
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.html.*
-import io.ktor.server.http.content.*
-import io.ktor.server.netty.Netty
-import io.ktor.server.response.respondText
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.html.*
 import me.jessehill.Greeting
