@@ -5,16 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import me.jessehill.models.Game
 import me.jessehill.models.User
 import me.jessehill.models.UserStats
 import me.jessehill.network.TicTacToeApi
-import me.jessehill.tictactoe.UIRoute
 
 data class TicTacToeState(
-    val board: Game?,
+    val currentGame: Game?,
     val leaderboard: List<Pair<User, UserStats>>,
     val users: List<User>,
     val user: User?,
@@ -27,7 +25,7 @@ class TicTacToeViewModel(
 ) : ViewModel() {
     var state: TicTacToeState by mutableStateOf(
         TicTacToeState(
-            board = null,
+            currentGame = null,
             leaderboard = emptyList(),
             users = emptyList(),
             user = null,
@@ -99,7 +97,7 @@ class TicTacToeViewModel(
             val game = ticTacToeApi.startGame(user, opponent)
 
             state = state.copy(
-                board = game,
+                currentGame = game,
                 userHistory = state.userHistory + game,
                 isLoading = false
             )
