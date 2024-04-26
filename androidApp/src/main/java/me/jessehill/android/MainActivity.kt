@@ -16,14 +16,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import me.jessehill.android.ui.GameBoard
@@ -81,13 +79,23 @@ class MainActivity : ComponentActivity() {
                             ),
                             title = { Text(text = "Tic Tac Toe - ${currentRoute.title}") }
                         )
-                        Crossfade(targetState = currentRoute, label = "navigation-container") {
-                            when (it) {
-                                is UIRoute.Home -> Home()
-                                is UIRoute.FindMatch -> Matchmaking()
-                                is UIRoute.Profile -> Profile()
-                                is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
-                                is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Crossfade(
+                                targetState = currentRoute,
+                                label = "navigation-container"
+                            ) { route ->
+                                when (route) {
+                                    is UIRoute.Home -> Home(
+                                        state = ticTacToeViewModel.state,
+                                        onLoad = { ticTacToeViewModel.onInitialLoad() },
+                                        onNavigate = { backstack = backstack + listOf(it) }
+                                    )
+
+                                    is UIRoute.FindMatch -> Matchmaking()
+                                    is UIRoute.Profile -> Profile()
+                                    is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
+                                    is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state)
+                                }
                             }
                         }
                         BottomAppBar(
@@ -102,18 +110,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun GreetingView(text: String) {
-    Text(text = text)
-}
-
-@Preview
-@Composable
-fun DefaultPreview() {
-    TicTacToeTheme {
-        GreetingView("Hello, Android!")
     }
 }

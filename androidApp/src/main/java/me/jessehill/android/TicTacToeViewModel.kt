@@ -12,7 +12,7 @@ import me.jessehill.models.UserStats
 import me.jessehill.network.TicTacToeApi
 
 data class TicTacToeState(
-    val board: Game?,
+    val currentGame: Game?,
     val leaderboard: List<Pair<User, UserStats>>,
     val users: List<User>,
     val user: User?,
@@ -25,7 +25,7 @@ class TicTacToeViewModel(
 ) : ViewModel() {
     var state: TicTacToeState by mutableStateOf(
         TicTacToeState(
-            board = null,
+            currentGame = null,
             leaderboard = emptyList(),
             users = emptyList(),
             user = null,
@@ -35,10 +35,72 @@ class TicTacToeViewModel(
     )
 
     init {
+        onInitialLoad()
+    }
+
+    fun onCompleteOnboarding(user: User) {
+        state = state.copy(user = user)
+    }
+
+    fun onLoadUserProfile(username: String) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
-            state = state.copy(leaderboard = ticTacToeApi.getTopFivePlayers())
+
+            state = state.copy(
+                user = ticTacToeApi.getUserProfileByUsername(username),
+                isLoading = false
+            )
+        }
+    }
+
+    fun onInitialLoad() {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            state = state.copy(
+                leaderboard = ticTacToeApi.getTopFivePlayers(),
+                users = ticTacToeApi.getAllUsers(),
+            )
+
             state = state.copy(isLoading = false)
+        }
+    }
+
+    fun onReloadLeaderboard() {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            state = state.copy(
+                leaderboard = ticTacToeApi.getTopFivePlayers(),
+            )
+
+            state = state.copy(isLoading = false)
+        }
+    }
+
+    fun onReloadUsers() {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            state = state.copy(
+                users = ticTacToeApi.getAllUsers(),
+            )
+
+            state = state.copy(isLoading = false)
+        }
+    }
+
+    fun onStartMatch(user: User, opponent: User) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            val game = ticTacToeApi.startGame(user, opponent)
+
+            state = state.copy(
+                currentGame = game,
+                userHistory = state.userHistory + game,
+                isLoading = false
+            )
         }
     }
 }

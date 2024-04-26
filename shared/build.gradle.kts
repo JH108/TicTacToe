@@ -38,12 +38,6 @@ kotlin {
         }
     }
 
-//    jar {
-//        manifest {
-//            attributes["Main-Class"] = "me.jesse.application.ServerKt"
-//        }
-//    }
-
     js {
         binaries.executable()
         browser {

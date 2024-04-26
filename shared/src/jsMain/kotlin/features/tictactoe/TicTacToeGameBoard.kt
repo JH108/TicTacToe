@@ -27,6 +27,7 @@ import me.jessehill.serializers.CommonSerializerModule
 import me.jessehill.tictactoe.Board
 import me.jessehill.tictactoe.MoveSymbol
 import me.jessehill.tictactoe.Square
+import me.jessehill.tictactoe.setSquares
 import org.w3c.fetch.Headers
 import org.w3c.fetch.RequestInit
 import react.FC
@@ -67,11 +68,7 @@ val TicTacToeGameBoard = FC<Props> { props ->
     // if the game changes then update the board with the new moves
     useEffect(game) {
         game?.let { safeGame ->
-            board = board.copy(squares = board.squares.mapIndexed { index, square ->
-                if (safeGame.moves.containsKey(index)) {
-                    square.copy(value = safeGame.moves[index]?.moveSymbol ?: MoveSymbol.EMPTY)
-                } else square
-            })
+            board = board.setSquares(safeGame)
         }
     }
 
