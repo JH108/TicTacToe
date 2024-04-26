@@ -79,17 +79,23 @@ class MainActivity : ComponentActivity() {
                             ),
                             title = { Text(text = "Tic Tac Toe - ${currentRoute.title}") }
                         )
-                        Crossfade(targetState = currentRoute, label = "navigation-container") { route ->
-                            when (route) {
-                                is UIRoute.Home -> Home(
-                                    state = ticTacToeViewModel.state,
-                                    onLoad = { ticTacToeViewModel.onInitialLoad() },
-                                    onNavigate = { backstack = backstack + listOf(it) }
-                                )
-                                is UIRoute.FindMatch -> Matchmaking()
-                                is UIRoute.Profile -> Profile()
-                                is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
-                                is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Crossfade(
+                                targetState = currentRoute,
+                                label = "navigation-container"
+                            ) { route ->
+                                when (route) {
+                                    is UIRoute.Home -> Home(
+                                        state = ticTacToeViewModel.state,
+                                        onLoad = { ticTacToeViewModel.onInitialLoad() },
+                                        onNavigate = { backstack = backstack + listOf(it) }
+                                    )
+
+                                    is UIRoute.FindMatch -> Matchmaking()
+                                    is UIRoute.Profile -> Profile()
+                                    is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
+                                    is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state)
+                                }
                             }
                         }
                         BottomAppBar(
