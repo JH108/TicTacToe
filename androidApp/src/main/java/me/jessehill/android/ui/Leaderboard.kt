@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -54,61 +55,57 @@ fun UserStatCard(
     user: User,
     userStats: UserStats
 ) {
-    Card(modifier = modifier.heightIn(min = 80.dp, max = 140.dp)) {
+    Card(modifier = modifier) {
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
             Text(text = user.username)
             Text(text = "Win Percent: ${userStats.winPercentString}")
 
-            LazyHorizontalGrid(
-                rows = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                userScrollEnabled = false,
-                content = {
-                    item {
-                        SuggestionChip(
-                            onClick = { },
-                            label = {
-                                Text(text = "Total Games: ${userStats.totalGames}")
-                            }
-                        )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                SuggestionChip(
+                    onClick = { },
+                    label = {
+                        Text(text = "Total Games: ${userStats.totalGames}")
                     }
-                    item {
-                        SuggestionChip(
-                            onClick = { },
-                            label = {
-                                Text(text = "Wins: ${userStats.totalWins}")
-                            }
-                        )
+                )
+
+                SuggestionChip(
+                    onClick = { },
+                    label = {
+                        Text(text = "Wins: ${userStats.totalWins}")
                     }
-                    item {
-                        SuggestionChip(
-                            onClick = { },
-                            label = {
-                                Text(text = "Draws: ${userStats.totalDraws}")
-                            }
-                        )
+                )
+
+                SuggestionChip(
+                    onClick = { },
+                    label = {
+                        Text(text = "Draws: ${userStats.totalDraws}")
                     }
-                    item {
-                        SuggestionChip(
-                            onClick = { },
-                            label = {
-                                Text(text = "Wins as X: ${userStats.totalXWins}")
-                            }
-                        )
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                SuggestionChip(
+                    onClick = { },
+                    label = {
+                        Text(text = "Wins as X: ${userStats.totalXWins}")
                     }
-                    item {
-                        SuggestionChip(
-                            onClick = { },
-                            label = {
-                                Text(text = "Wins as O: ${userStats.totalOWins}")
-                            }
-                        )
+                )
+
+                SuggestionChip(
+                    onClick = { },
+                    label = {
+                        Text(text = "Wins as O: ${userStats.totalOWins}")
                     }
-                }
-            )
+                )
+            }
         }
     }
 }
