@@ -7,7 +7,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import me.jessehill.models.Game
 import me.jessehill.models.StartGameRequestBody
 import me.jessehill.models.User
@@ -22,6 +21,14 @@ class TicTacToeApi {
                 CommonSerializerModule.json
             )
         }
+    }
+
+    suspend fun registerUser(user: User): User {
+        val registeredUser = httpClient.post("${ClientConfiguration.apiUrl}/register") {
+            setBody(user)
+        }.body<User>()
+
+        return registeredUser
     }
 
     // TODO: Add error handling
@@ -46,7 +53,8 @@ class TicTacToeApi {
     }
 
     suspend fun getGamesForUserId(userId: String): List<Game> {
-        val games = httpClient.get("${ClientConfiguration.apiUrl}/users/$userId/games").body<List<Game>>()
+        val games =
+            httpClient.get("${ClientConfiguration.apiUrl}/users/$userId/games").body<List<Game>>()
 
         return games
     }
@@ -60,10 +68,10 @@ class TicTacToeApi {
     suspend fun startGame(playerOne: User, playerTwo: User): Game {
         val game = httpClient.post("${ClientConfiguration.apiUrl}/games/start") {
             setBody(
-               StartGameRequestBody(
-                   playerOne = playerOne,
-                   playerTwo = playerTwo
-               )
+                StartGameRequestBody(
+                    playerOne = playerOne,
+                    playerTwo = playerTwo
+                )
             )
         }.body<Game>()
 
@@ -71,7 +79,8 @@ class TicTacToeApi {
     }
 
     suspend fun getTopFivePlayers(): List<Pair<User, UserStats>> {
-        val users = httpClient.get("${ClientConfiguration.apiUrl}/leaderboard").body<List<Pair<User, UserStats>>>()
+        val users = httpClient.get("${ClientConfiguration.apiUrl}/leaderboard")
+            .body<List<Pair<User, UserStats>>>()
 
         return users
     }

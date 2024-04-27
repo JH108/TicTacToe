@@ -88,6 +88,11 @@ class MainActivity : ComponentActivity() {
                                     is UIRoute.Home -> Home(
                                         state = ticTacToeViewModel.state,
                                         onLoad = { ticTacToeViewModel.onInitialLoad() },
+                                        onCompleteOnboarding = {
+                                            ticTacToeViewModel.onCompleteOnboarding(
+                                                it
+                                            )
+                                        },
                                         onNavigate = { backstack = backstack + listOf(it) }
                                     )
 

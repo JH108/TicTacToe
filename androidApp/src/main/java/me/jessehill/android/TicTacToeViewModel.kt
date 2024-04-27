@@ -17,8 +17,15 @@ data class TicTacToeState(
     val users: List<User>,
     val user: User?,
     val userHistory: List<Game>,
-    val isLoading: Boolean
+    val isLoading: Boolean,
+    val authStatus: AuthStatus = AuthStatus.INITIAL
 )
+
+enum class AuthStatus {
+    AUTHENTICATED,
+    UNAUTHENTICATED,
+    INITIAL
+}
 
 class TicTacToeViewModel(
     val ticTacToeApi: TicTacToeApi
@@ -39,7 +46,26 @@ class TicTacToeViewModel(
     }
 
     fun onCompleteOnboarding(user: User) {
-        state = state.copy(user = user)
+        state = state.copy(isLoading = true)
+
+        viewModelScope.launch {
+            val userResult = runCatching {
+                ticTacToeApi.registerUser(user)
+            }
+
+            state = if (userResult.isSuccess) {
+                state.copy(
+                    user = userResult.getOrNull(),
+                    authStatus = AuthStatus.AUTHENTICATED,
+                    isLoading = false
+                )
+            } else {
+                state.copy(
+                    authStatus = AuthStatus.UNAUTHENTICATED,
+                    isLoading = false
+                )
+            }
+        }
     }
 
     fun onLoadUserProfile(username: String) {
