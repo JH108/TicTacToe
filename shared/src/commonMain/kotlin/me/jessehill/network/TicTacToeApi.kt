@@ -6,6 +6,8 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import me.jessehill.models.Game
 import me.jessehill.models.StartGameRequestBody
@@ -26,6 +28,7 @@ class TicTacToeApi {
     suspend fun registerUser(user: User): User {
         val registeredUser = httpClient.post("${ClientConfiguration.apiUrl}/register") {
             setBody(user)
+            contentType(ContentType.Application.Json)
         }.body<User>()
 
         return registeredUser
@@ -41,6 +44,7 @@ class TicTacToeApi {
     suspend fun saveGame(game: Game): Game {
         val savedGame = httpClient.post("${ClientConfiguration.apiUrl}/games/save") {
             setBody(game)
+            contentType(ContentType.Application.Json)
         }.body<Game>()
 
         return savedGame
@@ -73,6 +77,7 @@ class TicTacToeApi {
                     playerTwo = playerTwo
                 )
             )
+            contentType(ContentType.Application.Json)
         }.body<Game>()
 
         return game

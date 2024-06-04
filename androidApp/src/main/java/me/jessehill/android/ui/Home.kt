@@ -1,5 +1,6 @@
 package me.jessehill.android.ui
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -129,6 +130,7 @@ fun Onboarding(
             enabled = onboardingUser.isComplete(),
             onClick = {
                 onboardingUser.toUser()?.let { user ->
+                    Log.v("Onboarding", "User: $user")
                     onCompleteOnboarding(
                         User(
                             username = user.username,

@@ -1,5 +1,6 @@
 package me.jessehill.android
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,6 +47,7 @@ class TicTacToeViewModel(
     }
 
     fun onCompleteOnboarding(user: User) {
+        Log.v("TicTacToeViewModel", "User: $user")
         state = state.copy(isLoading = true)
 
         viewModelScope.launch {
@@ -54,12 +56,15 @@ class TicTacToeViewModel(
             }
 
             state = if (userResult.isSuccess) {
+                Log.v("TicTacToeViewModel", "User registered successfully")
                 state.copy(
                     user = userResult.getOrNull(),
                     authStatus = AuthStatus.AUTHENTICATED,
                     isLoading = false
                 )
             } else {
+                Log.e("TicTacToeViewModel", "Failed to register user")
+                userResult.exceptionOrNull()?.printStackTrace()
                 state.copy(
                     authStatus = AuthStatus.UNAUTHENTICATED,
                     isLoading = false
