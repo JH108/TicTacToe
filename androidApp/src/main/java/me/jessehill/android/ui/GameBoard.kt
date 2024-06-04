@@ -43,8 +43,16 @@ fun GameBoard(state: TicTacToeState) {
     CenteredColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column {
+        CenteredColumn {
             Text(text = "Game Board")
+            Text(text = "Player X: ${state.currentGame?.playerX?.username}")
+            Text(text = "Player O: ${state.currentGame?.playerO?.username}")
+
+            if (state.currentGame?.playerToMove?.id?.toString() == state.user?.id?.toString()) {
+                Text(text = "It's your turn!")
+            } else {
+                Text(text = "Waiting for the other player to move...")
+            }
         }
 
         GameBoardUI(

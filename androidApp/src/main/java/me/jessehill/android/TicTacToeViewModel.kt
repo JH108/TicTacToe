@@ -57,8 +57,17 @@ class TicTacToeViewModel(
 
             state = if (userResult.isSuccess) {
                 Log.v("TicTacToeViewModel", "User registered successfully")
+                val userResultData = userResult.getOrNull()
+
+                if (userResultData != null) {
+                    Log.v("TicTacToeViewModel", "Returned User: $userResultData")
+                    onLoadUserProfile(userResultData.username)
+                    fetchUserHistory()
+                    fetchActiveGame()
+                }
+
                 state.copy(
-                    user = userResult.getOrNull(),
+                    user = userResultData,
                     authStatus = AuthStatus.AUTHENTICATED,
                     isLoading = false
                 )
@@ -73,15 +82,15 @@ class TicTacToeViewModel(
         }
     }
 
-    fun onLoadUserProfile(username: String) {
-        viewModelScope.launch {
-            state = state.copy(isLoading = true)
+    suspend fun onLoadUserProfile(username: String) {
+        state = state.copy(isLoading = true)
 
-            state = state.copy(
-                user = ticTacToeApi.getUserProfileByUsername(username),
-                isLoading = false
-            )
-        }
+        Log.v("TicTacToeViewModel", "Loading user profile for $username")
+
+        state = state.copy(
+            user = ticTacToeApi.getUserProfileByUsername(username),
+            isLoading = false
+        )
     }
 
     fun onInitialLoad() {
@@ -119,6 +128,42 @@ class TicTacToeViewModel(
 
             state = state.copy(isLoading = false)
         }
+    }
+
+    suspend fun fetchUserHistory() {
+        state = state.copy(isLoading = true)
+
+        Log.v("TicTacToeViewModel", "Fetching user history")
+        Log.v("TicTacToeViewModel", "User: ${state.user}")
+
+        val userId = state.user?.id
+
+        if (userId == null) {
+            state = state.copy(isLoading = false)
+            return
+        }
+
+        state = state.copy(
+            userHistory = ticTacToeApi.getGamesForUserId(userId.toString()),
+            isLoading = false
+        )
+    }
+
+    suspend fun fetchActiveGame() {
+        state = state.copy(isLoading = true)
+
+        Log.v("TicTacToeViewModel", "Fetching active game for user")
+        Log.v("TicTacToeViewModel", "User History: ${state.userHistory}")
+
+        if (state.userHistory.isEmpty()) {
+            state = state.copy(isLoading = false)
+            return
+        }
+
+        state = state.copy(
+            currentGame = ticTacToeApi.getGame(state.userHistory.last().id.toString()),
+            isLoading = false
+        )
     }
 
     fun onStartMatch(user: User, opponent: User) {
