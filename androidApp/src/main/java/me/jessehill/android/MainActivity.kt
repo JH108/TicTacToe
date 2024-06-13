@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.launch
 import me.jessehill.android.ui.GameBoard
+import me.jessehill.android.ui.GameBoardHolder
 import me.jessehill.android.ui.Home
 import me.jessehill.android.ui.Leaderboard
 import me.jessehill.android.ui.Matchmaking
@@ -122,7 +123,7 @@ class MainActivity : ComponentActivity() {
                                     )
 
                                     is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
-                                    is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state, onSaveGame = { ticTacToeViewModel.onSaveGame(it) })
+                                    is UIRoute.Play -> GameBoardHolder(state = ticTacToeViewModel.state, onSaveGame = { ticTacToeViewModel.onSaveGame(it) })
                                 }
                             }
                         }

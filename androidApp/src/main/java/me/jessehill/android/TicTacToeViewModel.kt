@@ -55,8 +55,7 @@ class TicTacToeViewModel(
     // then if the state is null we won't change anything and if the state is not null we will update the board
     // we can also used distinctUntilChanged to avoid unnecessary recompositions
     fun onWatchForGameUpdates() {
-        // Move off the main thread for this coroutine to reduce the chance of blocking UI
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             while (true) {
                 if (
                     state.user != null &&
@@ -65,12 +64,9 @@ class TicTacToeViewModel(
                     // Refresh the current game
                     val updatedGame = ticTacToeApi.getGame(state.currentGame?.id.toString())
 
-                    // Move back to the main thread to do the state update
-                    withContext(Dispatchers.Main) {
-                        state = state.copy(
-                            currentGame = updatedGame
-                        )
-                    }
+                    state = state.copy(
+                        currentGame = updatedGame
+                    )
                 }
                 delay(5000)
             }

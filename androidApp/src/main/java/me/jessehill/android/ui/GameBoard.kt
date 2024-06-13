@@ -26,49 +26,101 @@ import me.jessehill.android.TicTacToeState
 import me.jessehill.android.TicTacToeTheme
 import me.jessehill.android.ui.components.CenteredColumn
 import me.jessehill.models.Game
+import me.jessehill.models.GameStatus
+import me.jessehill.models.User
 import me.jessehill.tictactoe.Board
 import me.jessehill.tictactoe.MoveSymbol
 import me.jessehill.tictactoe.Square
 import me.jessehill.tictactoe.setSquares
 
 @Composable
-fun GameBoard(
+fun GameBoardHolder(
     state: TicTacToeState,
     onSaveGame: (Game) -> Unit
 ) {
-    // TODO: This would be better as two separate composable functions
-    //  this one should take only a non-null game and a function to save the game
-    //  the other would take a nullable game and a function to save the game
+    CenteredColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val user = state.user
+        val game = state.currentGame
+        val isLoading = state.isLoading
+        val opponent = remember(user, game) { if (user != null) game?.opponent(user) else null }
+
+        if (user != null && game != null && opponent != null) {
+            GameBoard(
+                user = user,
+                game = game,
+                isLoading = isLoading,
+                opponent = opponent,
+                onSaveGame = onSaveGame
+            )
+        } else {
+            Text(text = "No game data available.")
+        }
+    }
+}
+
+@Composable
+fun GameBoard(
+    user: User,
+    game: Game,
+    isLoading: Boolean,
+    opponent: User,
+    onSaveGame: (Game) -> Unit
+) {
     var board by remember {
         mutableStateOf(Board())
     }
 
-    LaunchedEffect(key1 = state.currentGame, block = {
-        if (state.currentGame != null) {
-            board = board.setSquares(state.currentGame)
-        }
+    LaunchedEffect(key1 = game, block = {
+        board = board.setSquares(game)
     })
 
-    CenteredColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column {
         CenteredColumn {
             Text(text = "Game Board")
-            Text(text = "Player X: ${state.currentGame?.playerX?.username}")
-            Text(text = "Player O: ${state.currentGame?.playerO?.username}")
+            Text(text = "Player X: ${game.playerX.username}")
+            Text(text = "Player O: ${game.playerO.username}")
 
-            if (state.currentGame?.playerToMove?.id?.toString() == state.user?.id?.toString()) {
-                Text(text = "It's your turn!")
-            } else {
-                Text(text = "Waiting for the other player to move...")
+            Crossfade(targetState = game.status, label = "game-status-animation") { status ->
+                when (status) {
+                    GameStatus.IN_PROGRESS -> {
+                        if (game.playerToMove.id.toString() == user.id.toString()) {
+                            Text(text = "It's your turn!")
+                        } else {
+                            Text(text = "Waiting on ${opponent.username}...")
+                        }
+                    }
+
+                    GameStatus.DRAW -> {
+                        Text(text = "The game is a draw.")
+                    }
+
+                    GameStatus.O_WON -> {
+                        if (game.playerO.id.toString() == user.id.toString()) {
+                            Text(text = "You have won the game.")
+                        } else {
+                            Text(text = "${opponent.username} has won the game.")
+                        }
+                    }
+
+                    GameStatus.X_WON -> {
+                        if (game.playerX.id.toString() == user.id.toString()) {
+                            Text(text = "You have won the game.")
+                        } else {
+                            Text(text = "${opponent.username} has won the game.")
+                        }
+                    }
+                }
+
             }
         }
 
-        Crossfade(targetState = state.isLoading, label = "game-loading-animation") { isLoading ->
+        Crossfade(targetState = isLoading, label = "game-loading-animation") {
             CenteredColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                when (isLoading) {
+                when (it) {
                     true -> CenteredColumn {
                         Text(text = "Loading the game data...")
                         CircularProgressIndicator()
@@ -79,11 +131,9 @@ fun GameBoard(
                         board = board,
                         onClick = { index ->
                             Log.v("GameBoard", "Clicked on cell $index")
-                            val gameWithMove = state.currentGame?.play(index)
+                            val gameWithMove = game.play(index)
 
-                            if (gameWithMove != null) {
-                                onSaveGame(gameWithMove)
-                            }
+                            onSaveGame(gameWithMove)
                         }
                     )
                 }
