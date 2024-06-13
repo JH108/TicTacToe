@@ -85,11 +85,7 @@ fun Onboarding(
     onNavigate: (UIRoute) -> Unit
 ) {
     var onboardingUser by remember {
-        mutableStateOf(OnboardingUser(
-            username = "gymbro",
-            firstName = "hey",
-            lastName = "yo"
-        ))
+        mutableStateOf(OnboardingUser())
     }
 
     Column(
