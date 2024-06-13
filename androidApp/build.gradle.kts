@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
     implementation("com.benasher44:uuid:0.8.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
 //    implementation(libs.appyx.material3)
 //    implementation(libs.appyx.navigation)
 //    implementation(libs.appyx.backstack)

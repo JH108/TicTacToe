@@ -6,8 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.jessehill.models.Game
+import me.jessehill.models.GameStatus
 import me.jessehill.models.User
 import me.jessehill.models.UserStats
 import me.jessehill.network.TicTacToeApi
@@ -44,6 +48,33 @@ class TicTacToeViewModel(
 
     init {
         onInitialLoad()
+        onWatchForGameUpdates()
+    }
+
+    // Base this on the game state so that we are creating a state flow whenever the game state changes
+    // then if the state is null we won't change anything and if the state is not null we will update the board
+    // we can also used distinctUntilChanged to avoid unnecessary recompositions
+    fun onWatchForGameUpdates() {
+        // Move off the main thread for this coroutine to reduce the chance of blocking UI
+        viewModelScope.launch(Dispatchers.IO) {
+            while (true) {
+                if (
+                    state.user != null &&
+                    state.currentGame?.status == GameStatus.IN_PROGRESS
+                ) {
+                    // Refresh the current game
+                    val updatedGame = ticTacToeApi.getGame(state.currentGame?.id.toString())
+
+                    // Move back to the main thread to do the state update
+                    withContext(Dispatchers.Main) {
+                        state = state.copy(
+                            currentGame = updatedGame
+                        )
+                    }
+                }
+                delay(5000)
+            }
+        }
     }
 
     fun onCompleteOnboarding(user: User) {
@@ -63,7 +94,7 @@ class TicTacToeViewModel(
                     Log.v("TicTacToeViewModel", "Returned User: $userResultData")
                     onLoadUserProfile(userResultData.username)
                     fetchUserHistory()
-                    fetchActiveGame()
+                    fetchLastGame()
                 }
 
                 state.copy(
@@ -149,7 +180,15 @@ class TicTacToeViewModel(
         )
     }
 
-    suspend fun fetchActiveGame() {
+    suspend fun fetchGame(id: String): Game {
+        Log.v("TicTacToeViewModel", "Fetching game with ID: $id")
+
+        return ticTacToeApi.getGame(id)
+    }
+
+    // TODO: Remove this. This makes no sense, we should just load the last game from history and display it
+    //  that can be handled in the UI layer
+    suspend fun fetchLastGame() {
         state = state.copy(isLoading = true)
 
         Log.v("TicTacToeViewModel", "Fetching active game for user")
@@ -160,23 +199,50 @@ class TicTacToeViewModel(
             return
         }
 
+        val lastGame = state.userHistory.last()
+        val activeGame = ticTacToeApi.getGame(lastGame.id.toString())
+
         state = state.copy(
-            currentGame = ticTacToeApi.getGame(state.userHistory.last().id.toString()),
+            currentGame = activeGame,
             isLoading = false
         )
     }
 
-    fun onStartMatch(user: User, opponent: User) {
-        viewModelScope.launch {
-            state = state.copy(isLoading = true)
+    fun onSaveGame(game: Game) {
+        state = state.copy(isLoading = true)
 
-            val game = ticTacToeApi.startGame(user, opponent)
+        viewModelScope.launch {
+            val updatedGame = ticTacToeApi.saveGame(game)
 
             state = state.copy(
-                currentGame = game,
-                userHistory = state.userHistory + game,
+                currentGame = updatedGame,
+                userHistory = state.userHistory.map {
+                    if (it.id.toString() == updatedGame.id.toString()) updatedGame else it
+                },
                 isLoading = false
             )
         }
+    }
+
+    suspend fun onStartMatch(user: User, opponent: User) {
+        state = state.copy(isLoading = true)
+
+        val game = ticTacToeApi.startGame(user, opponent)
+
+        state = state.copy(
+            currentGame = game,
+            userHistory = state.userHistory + game,
+            isLoading = false
+        )
+    }
+
+    fun onLogout() {
+        state = state.copy(
+            user = null,
+            userHistory = emptyList(),
+            currentGame = null,
+            authStatus = AuthStatus.UNAUTHENTICATED,
+            isLoading = false
+        )
     }
 }

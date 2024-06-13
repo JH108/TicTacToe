@@ -1,6 +1,7 @@
 package me.jessehill.android.ui
 
 import android.util.Log
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,13 +25,20 @@ import androidx.compose.ui.unit.dp
 import me.jessehill.android.TicTacToeState
 import me.jessehill.android.TicTacToeTheme
 import me.jessehill.android.ui.components.CenteredColumn
+import me.jessehill.models.Game
 import me.jessehill.tictactoe.Board
 import me.jessehill.tictactoe.MoveSymbol
 import me.jessehill.tictactoe.Square
 import me.jessehill.tictactoe.setSquares
 
 @Composable
-fun GameBoard(state: TicTacToeState) {
+fun GameBoard(
+    state: TicTacToeState,
+    onSaveGame: (Game) -> Unit
+) {
+    // TODO: This would be better as two separate composable functions
+    //  this one should take only a non-null game and a function to save the game
+    //  the other would take a nullable game and a function to save the game
     var board by remember {
         mutableStateOf(Board())
     }
@@ -55,13 +64,31 @@ fun GameBoard(state: TicTacToeState) {
             }
         }
 
-        GameBoardUI(
-            modifier = Modifier,
-            board = board,
-            onClick = { index ->
-                Log.v("GameBoard", "Clicked on cell $index")
+        Crossfade(targetState = state.isLoading, label = "game-loading-animation") { isLoading ->
+            CenteredColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                when (isLoading) {
+                    true -> CenteredColumn {
+                        Text(text = "Loading the game data...")
+                        CircularProgressIndicator()
+                    }
+
+                    false -> GameBoardUI(
+                        modifier = Modifier,
+                        board = board,
+                        onClick = { index ->
+                            Log.v("GameBoard", "Clicked on cell $index")
+                            val gameWithMove = state.currentGame?.play(index)
+
+                            if (gameWithMove != null) {
+                                onSaveGame(gameWithMove)
+                            }
+                        }
+                    )
+                }
             }
-        )
+        }
     }
 }
 

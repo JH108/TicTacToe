@@ -20,10 +20,12 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.launch
 import me.jessehill.android.ui.GameBoard
 import me.jessehill.android.ui.Home
 import me.jessehill.android.ui.Leaderboard
@@ -55,6 +57,7 @@ class MainActivity : ComponentActivity() {
             val currentRoute by remember(backstack) {
                 derivedStateOf { backstack.last() }
             }
+            val coroutineScope = rememberCoroutineScope()
 
             BackHandler {
                 if (backstack.size > 1) {
@@ -64,7 +67,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            TicTacToeTheme {
+            TicTacToeTheme(
+                darkTheme = false
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -96,10 +101,28 @@ class MainActivity : ComponentActivity() {
                                         onNavigate = { backstack = backstack + listOf(it) }
                                     )
 
-                                    is UIRoute.FindMatch -> Matchmaking()
-                                    is UIRoute.Profile -> Profile()
+                                    is UIRoute.FindMatch -> Matchmaking(
+                                        users = ticTacToeViewModel.state.users,
+                                        activeUser = ticTacToeViewModel.state.user,
+                                        onStartMatch = { user, opponent ->
+                                            coroutineScope.launch {
+                                                ticTacToeViewModel.onStartMatch(
+                                                    user = user,
+                                                    opponent = opponent
+                                                )
+                                                backstack = backstack + listOf(UIRoute.Play)
+                                            }
+                                        }
+                                    )
+
+                                    is UIRoute.Profile -> Profile(
+                                        user = ticTacToeViewModel.state.user,
+                                        userHistory = ticTacToeViewModel.state.userHistory,
+                                        onLogout = { ticTacToeViewModel.onLogout() }
+                                    )
+
                                     is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
-                                    is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state)
+                                    is UIRoute.Play -> GameBoard(state = ticTacToeViewModel.state, onSaveGame = { ticTacToeViewModel.onSaveGame(it) })
                                 }
                             }
                         }
