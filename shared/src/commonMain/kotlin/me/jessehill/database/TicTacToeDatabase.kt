@@ -98,7 +98,7 @@ class TicTacToeDatabaseImpl(databaseDriverFactory: DatabaseDriverFactory) {
             .mapToList(Dispatchers.Default)
     }
 
-    fun getUser(
+    fun getUserById(
         userId: String
     ): Flow<User?> {
         return databaseQueries.selectUserById(userId, ::mapDatabaseUserToModelUser)

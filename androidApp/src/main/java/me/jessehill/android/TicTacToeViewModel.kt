@@ -73,6 +73,14 @@ class TicTacToeViewModel(
         }
     }
 
+    fun loadExistingUserById(userId: String) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            state = state.copy()
+        }
+    }
+
     fun onCompleteOnboarding(user: User) {
         Log.v("TicTacToeViewModel", "User: $user")
         state = state.copy(isLoading = true)

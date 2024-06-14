@@ -1,5 +1,6 @@
 package me.jessehill.android
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -16,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,10 +25,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import me.jessehill.android.ui.GameBoard
 import me.jessehill.android.ui.GameBoardHolder
 import me.jessehill.android.ui.Home
 import me.jessehill.android.ui.Leaderboard
@@ -34,6 +42,8 @@ import me.jessehill.android.ui.Matchmaking
 import me.jessehill.android.ui.Profile
 import me.jessehill.network.TicTacToeApi
 import me.jessehill.tictactoe.UIRoute
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
     private val ticTacToeApi by lazy { TicTacToeApi() }
@@ -44,6 +54,17 @@ class MainActivity : ComponentActivity() {
                     ticTacToeApi = ticTacToeApi
                 )
             }
+        }
+    }
+    private val USER_ID = stringPreferencesKey("user_id")
+    val userIdFlow: Flow<String> = applicationContext.dataStore.data
+        .map { preferences ->
+            preferences[USER_ID] ?: ""
+        }
+
+    suspend fun saveUserId(userId: String) {
+        applicationContext.dataStore.edit { settings ->
+            settings[USER_ID] = userId
         }
     }
 
@@ -67,6 +88,14 @@ class MainActivity : ComponentActivity() {
                     finish()
                 }
             }
+
+            LaunchedEffect(key1 = true, block = {
+                userIdFlow.map { userId ->
+                    if (userId.isNotEmpty()) {
+                        ticTacToeViewModel.onInitialLoad()
+                    }
+                }
+            })
 
             TicTacToeTheme(
                 darkTheme = false

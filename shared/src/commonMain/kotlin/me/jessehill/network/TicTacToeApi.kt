@@ -50,8 +50,14 @@ class TicTacToeApi {
         return savedGame
     }
 
+    suspend fun getUserProfileById(userId: String): User {
+        val user = httpClient.get("${ClientConfiguration.apiUrl}/users/id/$userId").body<User>()
+
+        return user
+    }
+
     suspend fun getUserProfileByUsername(username: String): User {
-        val user = httpClient.get("${ClientConfiguration.apiUrl}/users/$username").body<User>()
+        val user = httpClient.get("${ClientConfiguration.apiUrl}/users/username/$username").body<User>()
 
         return user
     }
