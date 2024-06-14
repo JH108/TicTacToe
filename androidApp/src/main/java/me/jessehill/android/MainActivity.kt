@@ -57,10 +57,12 @@ class MainActivity : ComponentActivity() {
         }
     }
     private val USER_ID = stringPreferencesKey("user_id")
-    val userIdFlow: Flow<String> = applicationContext.dataStore.data
-        .map { preferences ->
-            preferences[USER_ID] ?: ""
-        }
+    val userIdFlow: Flow<String> by lazy {
+        applicationContext.dataStore.data
+            .map { preferences ->
+                preferences[USER_ID] ?: ""
+            }
+    }
 
     suspend fun saveUserId(userId: String) {
         applicationContext.dataStore.edit { settings ->
@@ -92,7 +94,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(key1 = true, block = {
                 userIdFlow.map { userId ->
                     if (userId.isNotEmpty()) {
-                        ticTacToeViewModel.onInitialLoad()
+                        ticTacToeViewModel.loadExistingUserById(userId)
                     }
                 }
             })
@@ -127,6 +129,9 @@ class MainActivity : ComponentActivity() {
                                             ticTacToeViewModel.onCompleteOnboarding(
                                                 it
                                             )
+                                            coroutineScope.launch {
+                                                saveUserId(it.id.toString())
+                                            }
                                         },
                                         onNavigate = { backstack = backstack + listOf(it) }
                                     )
@@ -148,11 +153,19 @@ class MainActivity : ComponentActivity() {
                                     is UIRoute.Profile -> Profile(
                                         user = ticTacToeViewModel.state.user,
                                         userHistory = ticTacToeViewModel.state.userHistory,
-                                        onLogout = { ticTacToeViewModel.onLogout() }
+                                        onLogout = {
+                                            ticTacToeViewModel.onLogout()
+
+                                            coroutineScope.launch {
+                                                saveUserId("")
+                                            }
+                                        }
                                     )
 
                                     is UIRoute.Leaderboard -> Leaderboard(state = ticTacToeViewModel.state)
-                                    is UIRoute.Play -> GameBoardHolder(state = ticTacToeViewModel.state, onSaveGame = { ticTacToeViewModel.onSaveGame(it) })
+                                    is UIRoute.Play -> GameBoardHolder(
+                                        state = ticTacToeViewModel.state,
+                                        onSaveGame = { ticTacToeViewModel.onSaveGame(it) })
                                 }
                             }
                         }

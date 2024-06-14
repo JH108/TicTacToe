@@ -334,7 +334,7 @@ suspend fun createUser(user: OnboardingState): CreateUserResponse {
 suspend fun fetchUserByUsername(username: String): User? {
     val response = window.fetch(
         Request(
-            input = ClientConfiguration.apiUrl + "/users/$username",
+            input = ClientConfiguration.apiUrl + "/users?username=$username",
             init = RequestInit(
                 method = "GET",
                 headers = Headers().apply {

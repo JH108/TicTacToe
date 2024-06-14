@@ -81,52 +81,6 @@ fun Application.apiRoutes() {
 
                 call.respond(users)
             }
-            get("/users/username/{username}") {
-                val username = call.parameters["username"]
-                println("username: $username")
-
-                if (username == null) {
-                    call.respond(status = HttpStatusCode.NotAcceptable, message = "The username parameter is missing.")
-                    return@get
-                }
-
-                val user = withContext(Dispatchers.IO) {
-                    application.ticTacToeSdk.database.getUserByUsername(username).firstOrNull()
-                }
-
-                if (user == null) {
-                    call.respond(
-                        status = HttpStatusCode.NotFound,
-                        message = "The user with the username $username was not found."
-                    )
-                    return@get
-                }
-
-                call.respond(user)
-            }
-            get("/users/id/{userId}") {
-                val userId = call.parameters["userId"]
-                println("userId: $userId")
-
-                if (userId == null) {
-                    call.respond(status = HttpStatusCode.NotAcceptable, message = "The userId parameter is missing.")
-                    return@get
-                }
-
-                val user = withContext(Dispatchers.IO) {
-                    application.ticTacToeSdk.database.getUserById(userId).firstOrNull()
-                }
-
-                if (user == null) {
-                    call.respond(
-                        status = HttpStatusCode.NotFound,
-                        message = "The user with the id $userId was not found."
-                    )
-                    return@get
-                }
-
-                call.respond(user)
-            }
             get("/user") {
                 val username = call.request.queryParameters["username"]
                 val userId = call.request.queryParameters["userId"]

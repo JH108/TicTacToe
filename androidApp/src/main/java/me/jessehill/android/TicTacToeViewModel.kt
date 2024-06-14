@@ -77,7 +77,12 @@ class TicTacToeViewModel(
         viewModelScope.launch {
             state = state.copy(isLoading = true)
 
-            state = state.copy()
+            val user = ticTacToeApi.getUserProfileById(userId)
+
+            state = state.copy(
+                user = user,
+                isLoading = false
+            )
         }
     }
 
@@ -122,8 +127,10 @@ class TicTacToeViewModel(
 
         Log.v("TicTacToeViewModel", "Loading user profile for $username")
 
+        val user = ticTacToeApi.getUserProfileByUsername(username)
+
         state = state.copy(
-            user = ticTacToeApi.getUserProfileByUsername(username),
+            user = user,
             isLoading = false
         )
     }
