@@ -53,6 +53,7 @@ fun Application.apiRoutes() {
                 }
 
                 val newUser = User(
+                    id = user.id, // Keep the id that the client assigned to the user
                     username = user.username,
                     firstName = user.firstName,
                     lastName = user.lastName

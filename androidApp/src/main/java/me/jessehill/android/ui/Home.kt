@@ -5,6 +5,8 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import me.jessehill.android.TicTacToeState
 import me.jessehill.android.ui.components.CenteredColumn
@@ -105,7 +108,8 @@ fun Onboarding(
                 onboardingUser = onboardingUser.copy(username = it)
             },
             placeholder = { Text(text = "Enter a Username") },
-            label = { Text(text = "Username") }
+            label = { Text(text = "Username") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
 
         TextField(
@@ -114,7 +118,8 @@ fun Onboarding(
                 onboardingUser = onboardingUser.copy(firstName = it)
             },
             placeholder = { Text(text = "Enter your First Name") },
-            label = { Text(text = "First Name") }
+            label = { Text(text = "First Name") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         )
 
         TextField(
@@ -123,7 +128,8 @@ fun Onboarding(
                 onboardingUser = onboardingUser.copy(lastName = it)
             },
             placeholder = { Text(text = "Enter your Last Name") },
-            label = { Text(text = "Last Name") }
+            label = { Text(text = "Last Name") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
 
         Button(
