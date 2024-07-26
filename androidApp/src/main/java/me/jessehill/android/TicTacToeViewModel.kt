@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -62,7 +63,11 @@ class TicTacToeViewModel(
                 ) {
                     // Refresh the current game
                     val updatedGame =
-                        ticTacToeRepository.loadGame(state.currentGame?.id.toString()).firstOrNull()
+                        ticTacToeRepository.loadGame(state.currentGame?.id.toString())
+                            .firstOrNull()
+                            .runCatching { this }
+                            .onFailure { Log.e("TicTacToeViewModel", "Failed to load game: $it") }
+                            .getOrNull()
 
                     state = state.copy(
                         currentGame = updatedGame
@@ -136,12 +141,19 @@ class TicTacToeViewModel(
     }
 
     fun onInitialLoad() {
+        Log.v("TicTacToeViewModel", "Loading initial data")
         viewModelScope.launch {
             state = state.copy(isLoading = true)
 
+            val leaderboard = ticTacToeRepository.loadTopFivePlayers().firstOrNull()
+            Log.v("TicTacToeViewModel", "Leaderboard: $leaderboard")
+
+            val users = ticTacToeRepository.loadUsers().firstOrNull()
+            Log.v("TicTacToeViewModel", "Users: $users")
+
             state = state.copy(
-                leaderboard = ticTacToeRepository.loadTopFivePlayers().firstOrNull() ?: emptyList(),
-                users = ticTacToeRepository.loadUsers().firstOrNull() ?: emptyList(),
+                leaderboard = leaderboard ?: emptyList(),
+                users = users ?: emptyList(),
             )
 
             state = state.copy(isLoading = false)
