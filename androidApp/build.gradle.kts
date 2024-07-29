@@ -9,6 +9,7 @@ android {
     compileSdk = 34
     defaultConfig {
         applicationId = "me.jessehill.android"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 31
         targetSdk = 34
         versionCode = 1
@@ -52,5 +53,7 @@ dependencies {
 //    implementation(libs.appyx.navigation)
 //    implementation(libs.appyx.backstack)
 //    implementation(libs.appyx.interactions)
+    androidTestImplementation(libs.compose.test.ui)
+    debugImplementation(libs.compose.test.manifest)
     debugImplementation(libs.compose.ui.tooling)
 }
