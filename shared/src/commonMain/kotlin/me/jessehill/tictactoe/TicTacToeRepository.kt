@@ -195,14 +195,6 @@ class SimpleTicTacToeRepository(
         try {
             val users = api.getAllUsers()
 
-            users.forEach {
-                sdk.database.insertUser(it).runCatching {
-                    println("Inserted user $it")
-                }.onFailure {
-                    println("Error inserting user $it: $it")
-                }
-            }
-
             return flow {
                 emit(users)
             }
