@@ -1,5 +1,9 @@
 package me.jessehill
 
+import com.benasher44.uuid.uuid4
+import me.jessehill.models.Game
+import me.jessehill.models.GameStatus
+import me.jessehill.models.User
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -25,7 +29,7 @@ class GameTest {
     }
 
     @Test
-    fun `play on a square that is already taken`() {
+    fun playOnASquareThatIsAlreadyTaken() {
         // create a game
         val game = Game(
             playerX = playerX,
@@ -49,7 +53,7 @@ class GameTest {
     }
 
     @Test
-    fun `finish the game`() {
+    fun finishTheGame() {
         // create a game
         val game = Game(
             playerX = playerX,
@@ -78,7 +82,7 @@ class GameTest {
     }
 
     @Test
-    fun `finish a game where O wins`() {
+    fun finishAGameWhereOWins() {
         // create a game
         val game = Game(
             playerX = playerX,
@@ -121,7 +125,7 @@ class GameTest {
     }
 
     @Test
-    fun `check that a game is completed when drawn`() {
+    fun checkThatAGameIsCompletedWhenDrawn() {
         val game = Game(
             playerX = playerX,
             playerO = playerO,
@@ -146,7 +150,7 @@ class GameTest {
     }
 
     @Test
-    fun `check that the end time is set when the game is completed`() {
+    fun checkThatTheEndTimeIsSetWhenTheGameIsCompleted() {
         val game = Game(
             playerX = playerX,
             playerO = playerO,
@@ -177,3 +181,7 @@ class GameTest {
         val playerO = User("js", uuid4(), "John", "Smith")
     }
 }
+
+
+
+
