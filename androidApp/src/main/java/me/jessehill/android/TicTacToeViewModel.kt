@@ -6,14 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.jessehill.models.Game
 import me.jessehill.models.GameStatus
 import me.jessehill.models.User
 import me.jessehill.models.UserStats
-import me.jessehill.tictactoe.TicTacToeRepository
+import me.jessehill.network.TicTacToeApi
 
 data class TicTacToeState(
     val currentGame: Game?,
@@ -32,7 +33,7 @@ enum class AuthStatus {
 }
 
 class TicTacToeViewModel(
-    val ticTacToeRepository: TicTacToeRepository
+    val ticTacToeApi: TicTacToeApi
 ) : ViewModel() {
     var state: TicTacToeState by mutableStateOf(
         TicTacToeState(
@@ -61,8 +62,7 @@ class TicTacToeViewModel(
                     state.currentGame?.status == GameStatus.IN_PROGRESS
                 ) {
                     // Refresh the current game
-                    val updatedGame =
-                        ticTacToeRepository.loadGame(state.currentGame?.id.toString()).firstOrNull()
+                    val updatedGame = ticTacToeApi.getGame(state.currentGame?.id.toString())
 
                     state = state.copy(
                         currentGame = updatedGame
@@ -77,7 +77,7 @@ class TicTacToeViewModel(
         viewModelScope.launch {
             state = state.copy(isLoading = true)
 
-            val user = ticTacToeRepository.loadUserById(userId).firstOrNull()
+            val user = ticTacToeApi.getUserProfileById(userId)
 
             state = state.copy(
                 user = user,
@@ -92,7 +92,7 @@ class TicTacToeViewModel(
 
         viewModelScope.launch {
             val userResult = runCatching {
-                ticTacToeRepository.registerUser(user).firstOrNull()
+                ticTacToeApi.registerUser(user)
             }
 
             state = if (userResult.isSuccess) {
@@ -127,7 +127,7 @@ class TicTacToeViewModel(
 
         Log.v("TicTacToeViewModel", "Loading user profile for $username")
 
-        val user = ticTacToeRepository.loadUserByUsername(username).firstOrNull()
+        val user = ticTacToeApi.getUserProfileByUsername(username)
 
         state = state.copy(
             user = user,
@@ -140,8 +140,8 @@ class TicTacToeViewModel(
             state = state.copy(isLoading = true)
 
             state = state.copy(
-                leaderboard = ticTacToeRepository.loadTopFivePlayers().firstOrNull() ?: emptyList(),
-                users = ticTacToeRepository.loadUsers().firstOrNull() ?: emptyList(),
+                leaderboard = ticTacToeApi.getTopFivePlayers(),
+                users = ticTacToeApi.getAllUsers(),
             )
 
             state = state.copy(isLoading = false)
@@ -153,7 +153,7 @@ class TicTacToeViewModel(
             state = state.copy(isLoading = true)
 
             state = state.copy(
-                leaderboard = ticTacToeRepository.loadTopFivePlayers().firstOrNull() ?: emptyList(),
+                leaderboard = ticTacToeApi.getTopFivePlayers(),
             )
 
             state = state.copy(isLoading = false)
@@ -165,7 +165,7 @@ class TicTacToeViewModel(
             state = state.copy(isLoading = true)
 
             state = state.copy(
-                users = ticTacToeRepository.loadUsers().firstOrNull() ?: emptyList(),
+                users = ticTacToeApi.getAllUsers(),
             )
 
             state = state.copy(isLoading = false)
@@ -186,16 +186,15 @@ class TicTacToeViewModel(
         }
 
         state = state.copy(
-            userHistory = ticTacToeRepository.loadGamesForUserId(userId.toString()).firstOrNull()
-                ?: emptyList(),
+            userHistory = ticTacToeApi.getGamesForUserId(userId.toString()),
             isLoading = false
         )
     }
 
-    suspend fun fetchGame(id: String): Game? {
+    suspend fun fetchGame(id: String): Game {
         Log.v("TicTacToeViewModel", "Fetching game with ID: $id")
 
-        return ticTacToeRepository.loadGame(id).firstOrNull()
+        return ticTacToeApi.getGame(id)
     }
 
     // TODO: Remove this. This makes no sense, we should just load the last game from history and display it
@@ -212,17 +211,10 @@ class TicTacToeViewModel(
         }
 
         val lastGame = state.userHistory.last()
-        val activeGame =
-            ticTacToeRepository.loadGame(lastGame.id.toString()).firstOrNull()
-                .runCatching {
-                    Log.v("TicTacToeViewModel", "Loaded game: $this")
-                    this
-                }.onFailure {
-                    Log.e("TicTacToeViewModel", "Failed to load game: $it")
-                }
+        val activeGame = ticTacToeApi.getGame(lastGame.id.toString())
 
         state = state.copy(
-            currentGame = activeGame.getOrNull(),
+            currentGame = activeGame,
             isLoading = false
         )
     }
@@ -231,28 +223,28 @@ class TicTacToeViewModel(
         state = state.copy(isLoading = true)
 
         viewModelScope.launch {
-            ticTacToeRepository.saveGame(game).firstOrNull()?.also { updatedGame ->
-                state = state.copy(
-                    currentGame = updatedGame,
-                    userHistory = state.userHistory.map {
-                        if (it.id.toString() == updatedGame.id.toString()) updatedGame else it
-                    },
-                    isLoading = false
-                )
-            }
+            val updatedGame = ticTacToeApi.saveGame(game)
+
+            state = state.copy(
+                currentGame = updatedGame,
+                userHistory = state.userHistory.map {
+                    if (it.id.toString() == updatedGame.id.toString()) updatedGame else it
+                },
+                isLoading = false
+            )
         }
     }
 
     suspend fun onStartMatch(user: User, opponent: User) {
         state = state.copy(isLoading = true)
 
-        ticTacToeRepository.startGame(user, opponent).firstOrNull()?.also { game ->
-            state = state.copy(
-                currentGame = game,
-                userHistory = state.userHistory + game,
-                isLoading = false
-            )
-        }
+        val game = ticTacToeApi.startGame(user, opponent)
+
+        state = state.copy(
+            currentGame = game,
+            userHistory = state.userHistory + game,
+            isLoading = false
+        )
     }
 
     fun onLogout() {

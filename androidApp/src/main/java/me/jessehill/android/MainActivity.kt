@@ -40,30 +40,18 @@ import me.jessehill.android.ui.Home
 import me.jessehill.android.ui.Leaderboard
 import me.jessehill.android.ui.Matchmaking
 import me.jessehill.android.ui.Profile
-import me.jessehill.database.DatabaseDriverFactory
 import me.jessehill.network.TicTacToeApi
-import me.jessehill.tictactoe.SimpleTicTacToeRepository
-import me.jessehill.tictactoe.TicTacToeSdk
 import me.jessehill.tictactoe.UIRoute
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
-    private val ticTacToeSdk by lazy { TicTacToeSdk(
-        databaseDriverFactory = DatabaseDriverFactory(this)
-    ) }
     private val ticTacToeApi by lazy { TicTacToeApi() }
-    private val ticTacToeRepository by lazy {
-        SimpleTicTacToeRepository(
-            api = ticTacToeApi,
-            sdk = ticTacToeSdk
-        )
-    }
     private val ticTacToeViewModel by viewModels<TicTacToeViewModel> {
         viewModelFactory {
             initializer {
                 TicTacToeViewModel(
-                    ticTacToeRepository = ticTacToeRepository
+                    ticTacToeApi = ticTacToeApi
                 )
             }
         }
