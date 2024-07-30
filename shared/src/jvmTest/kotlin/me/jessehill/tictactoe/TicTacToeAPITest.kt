@@ -44,6 +44,26 @@ class TicTacToeAPITest {
         assertEquals(NEW_USER, CommonSerializerModule.json.decodeFromString(response.body()))
     }
 
+    @Test
+    fun `given an invalid user when registering that user then the app should respond with a proper HTTP Status`() = testApplication {
+        setup(databaseDriverFactory)
+
+        val invalidUser = """
+            {
+                "firstName": "Bad",
+                "lastName": "Actor"
+            }
+        """.trimIndent()
+
+        val response = customClient.post("$ROOT_PATH/register") {
+            setBody(invalidUser)
+            contentType(ContentType.Application.Json)
+        }
+
+        assertEquals(HttpStatusCode.NotAcceptable, response.status)
+        assertEquals("The request body is missing or malformed.", response.body())
+    }
+
     companion object {
         private val ROOT_PATH = "/api"
 
