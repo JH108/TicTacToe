@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import io.ktor.http.contentType
+import me.jessehill.database.SampleData
 
 class TicTacToeAPITest {
     private var databaseDriverFactory = DatabaseDriverFactory()
@@ -62,6 +63,60 @@ class TicTacToeAPITest {
 
         assertEquals(HttpStatusCode.NotAcceptable, response.status)
         assertEquals("The request body is missing or malformed.", response.body())
+    }
+
+    @Test
+    fun `given a user that already exists when registering that user then the app should respond with that user`() = testApplication {
+        setup(databaseDriverFactory)
+
+        val response = customClient.post("$ROOT_PATH/register") {
+            setBody(NEW_USER)
+            contentType(ContentType.Application.Json)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(NEW_USER, CommonSerializerModule.json.decodeFromString(response.body()))
+
+        val response2 = customClient.post("$ROOT_PATH/register") {
+            setBody(NEW_USER)
+            contentType(ContentType.Application.Json)
+        }
+
+        assertEquals(HttpStatusCode.OK, response2.status)
+        assertEquals(NEW_USER, CommonSerializerModule.json.decodeFromString(response2.body()))
+    }
+
+    @Test
+    fun `given users exist in the database when requesting all users then the app should respond with all users`() = testApplication {
+        setup(databaseDriverFactory)
+        customClient.get("$ROOT_PATH/load-fake-data")
+
+        val response = customClient.get("$ROOT_PATH/users")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(SampleData.users, response.body())
+    }
+
+    @Test
+    fun `given a valid username when a user is requested then the api responds with the user`() = testApplication {
+        setup(databaseDriverFactory)
+        customClient.get("$ROOT_PATH/load-fake-data")
+
+        val response = customClient.get("$ROOT_PATH/user?username=johnsmith")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(SampleData.johnSmith, response.body())
+    }
+
+    @Test
+    fun `given a valid user id when a user is requested then the api responds with the user`() = testApplication {
+        setup(databaseDriverFactory)
+        customClient.get("$ROOT_PATH/load-fake-data")
+
+        val response = customClient.get("$ROOT_PATH/user?userId=${SampleData.jessicaHill.id}")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(SampleData.jessicaHill, response.body())
     }
 
     companion object {

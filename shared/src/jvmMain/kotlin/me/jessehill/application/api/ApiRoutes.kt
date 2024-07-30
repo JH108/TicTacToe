@@ -85,8 +85,6 @@ fun Application.apiRoutes() {
             get("/user") {
                 val username = call.request.queryParameters["username"]
                 val userId = call.request.queryParameters["userId"]
-                println("username: $username")
-                println("userId: $userId")
 
                 if (username == null && userId == null) {
                     call.respond(
