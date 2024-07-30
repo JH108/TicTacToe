@@ -6,10 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.jessehill.models.Game
 import me.jessehill.models.GameStatus
 import me.jessehill.models.User
@@ -23,7 +21,8 @@ data class TicTacToeState(
     val user: User?,
     val userHistory: List<Game>,
     val isLoading: Boolean,
-    val authStatus: AuthStatus = AuthStatus.INITIAL
+    val authStatus: AuthStatus = AuthStatus.INITIAL,
+    val onboardingErrorMessage: String? = null
 )
 
 enum class AuthStatus {
@@ -53,7 +52,7 @@ class TicTacToeViewModel(
 
     // Base this on the game state so that we are creating a state flow whenever the game state changes
     // then if the state is null we won't change anything and if the state is not null we will update the board
-    // we can also used distinctUntilChanged to avoid unnecessary recompositions
+    // we can also use distinctUntilChanged to avoid unnecessary recompositions
     fun onWatchForGameUpdates() {
         viewModelScope.launch {
             while (true) {
@@ -122,17 +121,24 @@ class TicTacToeViewModel(
         }
     }
 
-    suspend fun onLoadUserProfile(username: String) {
+    suspend fun onLoadUserProfile(username: String): Boolean {
         state = state.copy(isLoading = true)
 
         Log.v("TicTacToeViewModel", "Loading user profile for $username")
 
-        val user = ticTacToeApi.getUserProfileByUsername(username)
+        val user = ticTacToeApi.getUserProfileByUsername(username).runCatching {
+            this
+        }.onFailure {
+            Log.e("TicTacToeViewModel", "Failed to fetch user profile for $username")
+        }.getOrNull()
 
         state = state.copy(
             user = user,
-            isLoading = false
+            isLoading = false,
+            onboardingErrorMessage = if (user == null) "Did not find a profile for $username" else null
         )
+
+        return user != null
     }
 
     fun onInitialLoad() {
@@ -173,12 +179,12 @@ class TicTacToeViewModel(
     }
 
     suspend fun fetchUserHistory() {
+        Log.v("TicTacToeViewModel", "Fetching user history")
         state = state.copy(isLoading = true)
 
-        Log.v("TicTacToeViewModel", "Fetching user history")
-        Log.v("TicTacToeViewModel", "User: ${state.user}")
-
         val userId = state.user?.id
+
+        Log.v("TicTacToeViewModel", "User ID: $userId")
 
         if (userId == null) {
             state = state.copy(isLoading = false)
@@ -191,19 +197,28 @@ class TicTacToeViewModel(
         )
     }
 
-    suspend fun fetchGame(id: String): Game {
-        Log.v("TicTacToeViewModel", "Fetching game with ID: $id")
+    suspend fun loadGame(id: String): Boolean {
+        val game = ticTacToeApi.getGame(id).runCatching {
+            this
+        }.onFailure {
+            Log.e("TicTacToeViewModel", "Failed to fetch game with ID: $id")
+        }.getOrNull()
 
-        return ticTacToeApi.getGame(id)
+        return if (game == null) {
+            Log.e("TicTacToeViewModel", "Game with ID: $id not found")
+            false
+        } else {
+            state = state.copy(
+                currentGame = game,
+                isLoading = false
+            )
+
+            true
+        }
     }
 
-    // TODO: Remove this. This makes no sense, we should just load the last game from history and display it
-    //  that can be handled in the UI layer
     suspend fun fetchLastGame() {
         state = state.copy(isLoading = true)
-
-        Log.v("TicTacToeViewModel", "Fetching active game for user")
-        Log.v("TicTacToeViewModel", "User History: ${state.userHistory}")
 
         if (state.userHistory.isEmpty()) {
             state = state.copy(isLoading = false)

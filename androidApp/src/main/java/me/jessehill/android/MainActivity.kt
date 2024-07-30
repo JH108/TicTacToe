@@ -2,6 +2,7 @@ package me.jessehill.android
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -60,12 +61,15 @@ class MainActivity : ComponentActivity() {
     val userIdFlow: Flow<String> by lazy {
         applicationContext.dataStore.data
             .map { preferences ->
+                Log.v("MainActivity:Datastore", "userIdFlow: ${preferences[USER_ID]}")
+
                 preferences[USER_ID] ?: ""
             }
     }
 
     suspend fun saveUserId(userId: String) {
         applicationContext.dataStore.edit { settings ->
+            Log.v("MainActivity", "saveUserId: $userId")
             settings[USER_ID] = userId
         }
     }
@@ -93,6 +97,7 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(key1 = true, block = {
                 userIdFlow.map { userId ->
+                    Log.v("MainActivity", "userIdFlow: $userId")
                     if (userId.isNotEmpty()) {
                         ticTacToeViewModel.loadExistingUserById(userId)
                     }
@@ -125,10 +130,15 @@ class MainActivity : ComponentActivity() {
                                     is UIRoute.Home -> Home(
                                         state = ticTacToeViewModel.state,
                                         onLoad = { ticTacToeViewModel.onInitialLoad() },
+                                        onSignIn = {
+                                            coroutineScope.launch {
+                                                val success = ticTacToeViewModel.onLoadUserProfile(it)
+                                                if (success)
+                                                    backstack = backstack + listOf(UIRoute.Profile)
+                                            }
+                                        },
                                         onCompleteOnboarding = {
-                                            ticTacToeViewModel.onCompleteOnboarding(
-                                                it
-                                            )
+                                            ticTacToeViewModel.onCompleteOnboarding(it)
                                             coroutineScope.launch {
                                                 saveUserId(it.id.toString())
                                             }
@@ -153,6 +163,16 @@ class MainActivity : ComponentActivity() {
                                     is UIRoute.Profile -> Profile(
                                         user = ticTacToeViewModel.state.user,
                                         userHistory = ticTacToeViewModel.state.userHistory,
+                                        onLoadUserHistory = {
+                                            coroutineScope.launch {
+                                                ticTacToeViewModel.fetchUserHistory()
+                                            }
+                                        },
+                                        onLoadGame = {
+                                            coroutineScope.launch {
+                                                ticTacToeViewModel.loadGame(it)
+                                            }
+                                        },
                                         onLogout = {
                                             ticTacToeViewModel.onLogout()
 
