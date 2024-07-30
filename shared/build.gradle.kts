@@ -51,9 +51,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
+            implementation(libs.app.cash.sqldelight.coroutines.extensions)
+            implementation(libs.app.cash.sqldelight.primitive.adapters)
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
-            implementation("app.cash.sqldelight:primitive-adapters:2.0.0")
             implementation("com.benasher44:uuid:0.8.2")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
@@ -72,7 +72,7 @@ kotlin {
         }
 
         jvmMain.dependencies {
-            implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
+            implementation(libs.app.cash.sqldelight.driver)
             implementation(libs.ktor.server.core.jvm)
             implementation(libs.ktor.server.resources)
             implementation(libs.ktor.server.call.logging.jvm)
@@ -82,6 +82,14 @@ kotlin {
             implementation(libs.ktor.server.netty)
             implementation(libs.ktor.server.html.builder.jvm)
             implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.1")
+        }
+
+        jvmTest.dependencies {
+            implementation(libs.ktor.server.test.host)
+            implementation(libs.kotlin.test)
+            implementation(libs.app.cash.sqldelight.coroutines.extensions)
+            implementation(libs.app.cash.sqldelight.primitive.adapters)
+            implementation(libs.app.cash.sqldelight.driver)
         }
 
         jsMain.dependencies {
@@ -118,6 +126,12 @@ sqldelight {
 tasks.named<Copy>("jvmProcessResources") {
     val jsBrowserDistribution = tasks.named("jsBrowserDistribution")
     from(jsBrowserDistribution)
+}
+
+tasks.withType(Test::class) {
+    useJUnitPlatform()
+
+    systemProperty("USE_MEMORY_DB", "true")
 }
 
 android {

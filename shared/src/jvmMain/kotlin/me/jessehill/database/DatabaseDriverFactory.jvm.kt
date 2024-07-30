@@ -6,11 +6,24 @@ import java.util.*
 
 actual class DatabaseDriverFactory {
     actual fun createDriver(): SqlDriver {
-        // TODO: Replace with a database that isn't in memory.
-        val driver: SqlDriver = JdbcSqliteDriver(
-            "jdbc:sqlite:tictactoe.db",
-            properties = Properties().apply { put("foreign_keys", "true") })
+        val driver: SqlDriver = if (System.getProperty("USE_MEMORY_DB") != null) {
+            createInMemorySqlDriver()
+        } else {
+            createRegularSqlDriver()
+        }
+
         TicTacToeDatabase.Schema.create(driver)
         return driver
+    }
+
+    private fun createInMemorySqlDriver(): SqlDriver {
+        return JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+    }
+
+    private fun createRegularSqlDriver(): SqlDriver {
+        return JdbcSqliteDriver(
+            "jdbc:sqlite:tictactoe.db",
+            properties = Properties().apply { put("foreign_keys", "true") }
+        )
     }
 }

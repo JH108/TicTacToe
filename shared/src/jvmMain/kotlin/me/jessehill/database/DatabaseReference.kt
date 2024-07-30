@@ -7,9 +7,9 @@ import me.jessehill.tictactoe.TicTacToeSdk
 /**
  * This must be called before Application.ticTacToeSdk is accessed, or it will throw an IllegalStateException.
  */
-fun Application.configureDatabases() {
+fun Application.configureDatabases(factory: DatabaseDriverFactory) {
     // TODO: Pass the configuration read from a hocon file to the database driver factory.
-    DatabaseReference.init()
+    DatabaseReference.init(factory)
 }
 
 val Application.ticTacToeSdk: TicTacToeSdk
@@ -21,8 +21,8 @@ val Application.ticTacToeSdk: TicTacToeSdk
 object DatabaseReference {
     private var sdk: TicTacToeSdk? = null
 
-    fun init() {
-        sdk = TicTacToeSdk(me.jessehill.database.DatabaseDriverFactory())
+    fun init(factory: DatabaseDriverFactory) {
+        sdk = TicTacToeSdk(factory)
     }
 
     val instance: TicTacToeSdk

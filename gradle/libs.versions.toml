@@ -10,6 +10,7 @@ kotlinxDatetime = "0.4.1"
 ktor = "2.3.9"
 datastore = "1.1.1"
 uuid = "0.8.2"
+sqldelight = "2.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -38,8 +39,12 @@ ktor-server-core-jvm = { module = "io.ktor:ktor-server-core-jvm", version.ref = 
 ktor-server-html-builder-jvm = { module = "io.ktor:ktor-server-html-builder-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
+app-cash-sqldelight-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+app-cash-sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+app-cash-sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -13,6 +13,7 @@ import me.jessehill.application.clientroutes.clientRoutes
 import me.jessehill.application.plugins.configureMonitoring
 import me.jessehill.application.plugins.configureResources
 import me.jessehill.application.plugins.configureSerialization
+import me.jessehill.database.DatabaseDriverFactory
 import me.jessehill.database.configureDatabases
 import me.jessehill.tictactoe.UIRoute
 
@@ -51,7 +52,7 @@ fun main() {
 }
 
 private fun Application.startApplication() {
-    configureDatabases()
+    configureDatabases(DatabaseDriverFactory())
     configureSerialization()
     configureMonitoring()
     configureResources()
